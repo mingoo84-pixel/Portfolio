@@ -30,6 +30,8 @@
   --ink: #111111;
   --body: #222222;
   --haze: #6b6b6b;
+  --accent: #1bbcaf;        /* vibrant teal */
+  --accent-dark: #149c91;   /* hover state */
   --line: rgba(17, 17, 17, 0.07);
   --display: 'Raleway', system-ui, sans-serif;
   --text: 'Inter', system-ui, sans-serif;
@@ -49,7 +51,7 @@ body {
 h1, h2, h3 { font-family: var(--display); font-weight: 900; color: var(--ink); letter-spacing: -0.02em; }
 img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
-::selection { background: var(--ink); color: #ffffff; }
+::selection { background: var(--accent); color: #ffffff; }
 
 .wrap { max-width: var(--container); margin: 0 auto; padding: 0 24px; }
 @media (min-width: 1024px) { .wrap { padding: 0 32px; } }
@@ -64,8 +66,9 @@ a { color: inherit; text-decoration: none; }
   padding: 14px 28px; border-radius: 100px;
   transition: background 0.25s, border-color 0.25s;
 }
-.btn-primary { background: var(--ink); color: #ffffff; }
-.btn-primary:hover { background: #404040; }
+.btn-primary { background: var(--accent); color: #ffffff; }
+.btn-primary:hover { background: var(--accent-dark); }
+.accent { color: var(--accent); }
 .btn-ghost { border: 1px solid rgba(17, 17, 17, 0.15); color: var(--ink); font-weight: 400; }
 .btn-ghost:hover { border-color: var(--ink); }
 
@@ -91,10 +94,10 @@ a { color: inherit; text-decoration: none; }
 .nav-links a { transition: color 0.2s; }
 .nav-links a:hover { color: var(--ink); }
 .nav-cta {
-  background: var(--ink); color: #ffffff !important; font-weight: 500;
+  background: var(--accent); color: #ffffff !important; font-weight: 500;
   padding: 8px 20px; border-radius: 100px; transition: background 0.25s;
 }
-.nav-cta:hover { background: #404040; }
+.nav-cta:hover { background: var(--accent-dark); }
 @media (max-width: 639px) { .nav-links a:not(.nav-cta) { display: none; } }
 
 /* ---------- hero ---------- */
@@ -111,9 +114,10 @@ a { color: inherit; text-decoration: none; }
 .hero-actions { margin-top: 36px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 .headshot {
   width: min(440px, 82vw); margin-top: 80px;
-  /* renders the photo's light-grey backdrop as pure white */
+  /* lifts the photo's grey backdrop (incl. vignetted corners) past pure
+     white so the multiply blend makes the photo edges invisible */
   mix-blend-mode: multiply;
-  filter: grayscale(1) brightness(1.05) contrast(1.04);
+  filter: grayscale(1) brightness(1.13) contrast(1.07);
 }
 
 /* ---------- logo strip ---------- */
@@ -264,8 +268,10 @@ a { color: inherit; text-decoration: none; }
 /* ---------- card 3: frankie flow ---------- */
 .bg-flow { background: linear-gradient(135deg, #eef2f8 0%, #e2eaf5 60%, #eef2f8 100%); }
 .bg-flow .case-kicker { color: #2f57c4; }
-.flow-canvas { width: min(420px, 90%); position: relative; height: 300px; justify-self: center; }
-@media (max-width: 767px) { .flow-canvas { order: 2; } }
+/* fixed 420x300 design space, scaled down as one unit on small screens */
+.flow-scale { width: min(420px, 100%); justify-self: center; }
+@media (max-width: 767px) { .flow-scale { order: 2; } }
+.flow-canvas { width: 420px; height: 300px; position: relative; transform-origin: top left; }
 .node {
   position: absolute; font-size: 11px; font-weight: 500; color: #ffffff;
   display: grid; place-items: center; text-align: center;
@@ -358,7 +364,7 @@ a { color: inherit; text-decoration: none; }
 <header id="top" class="hero">
   <div class="hero-inner">
     <p class="reveal kicker">Senior Product Designer — Otivo</p>
-    <h1 class="reveal">Designing clear,<br />simple products<br />people trust.</h1>
+    <h1 class="reveal">Designing clear,<br />simple products<br />people <span class="accent">trust.</span></h1>
     <p class="reveal hero-sub">I'm Joe Lee — <strong>16 years across design and animation</strong>, from Disney and Pixar to Riot Games, FrankieOne and fintech. Sydney based.</p>
     <div class="reveal hero-actions">
       <a href="#work" class="btn btn-primary">View work
@@ -453,7 +459,8 @@ a { color: inherit; text-decoration: none; }
       <article class="case reveal bg-flow">
         <a class="case-link" href="frankieflow.html" aria-label="Read the Frankie Flow case study"></a>
         <div class="case-split">
-          <div class="flow-canvas" aria-hidden="true">
+          <div class="flow-scale" aria-hidden="true">
+          <div class="flow-canvas">
             <div class="node n-check" style="left:4%; top:6%;">KYC Check</div>
             <div class="flow-line h" style="left:28%; top:13%; width:14%;"></div>
             <div class="node n-cond" style="left:44%; top:0%;"><span>Risk?</span></div>
@@ -466,6 +473,7 @@ a { color: inherit; text-decoration: none; }
             <div class="flow-line v" style="left:49%; top:62%; height:11%;"></div>
             <div class="node n-fail" style="left:40%; top:75%;">Fail</div>
             <div class="flow-plus" style="left:10%; top:52%;">+</div>
+          </div>
           </div>
           <div>
             <span class="case-kicker">FrankieOne — Fintech</span>
@@ -580,6 +588,18 @@ a { color: inherit; text-decoration: none; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
 <script>
 window.addEventListener('DOMContentLoaded', function () {
+  // scale the Frankie Flow diagram as one unit so it never breaks alignment
+  var flowScale = document.querySelector('.flow-scale');
+  var flowCanvas = document.querySelector('.flow-canvas');
+  function fitFlow() {
+    if (!flowScale || !flowCanvas) return;
+    var s = Math.min(1, flowScale.clientWidth / 420);
+    flowCanvas.style.transform = 'scale(' + s + ')';
+    flowScale.style.height = (300 * s) + 'px';
+  }
+  fitFlow();
+  window.addEventListener('resize', fitFlow);
+
   var els = document.querySelectorAll('.reveal');
   if (window.gsap && window.ScrollTrigger) {
     gsap.registerPlugin(ScrollTrigger);
