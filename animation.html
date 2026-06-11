@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Animation &amp; Illustration — Joseph Lee</title>
+<meta name="description" content="Eleven years of animation and illustration for film and TV — the craft foundation behind the product design. By Joseph Lee.">
+<style>
+/* ============================================================
+   WHITE-LABEL THEME — edit these variables to rebrand the
+   entire case study. Everything below inherits from here.
+   ============================================================ */
+:root{
+  --bg:           #101013;   /* page background */
+  --surface:      #18181d;   /* cards & panels */
+  --surface-2:    #1f1f26;   /* raised surface */
+  --line:         #2c2c35;   /* hairlines */
+  --text:         #ecebee;   /* body text */
+  --text-dim:     #a09fa8;   /* secondary text */
+  --accent:       #f59e0b;   /* primary brand colour (cel amber) */
+  --accent-2:     #ec4899;   /* secondary accent (ink pink) */
+  --nav-w:        232px;
+  --max-w:        920px;
+  --radius:       14px;
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto} /* JS handles smooth scrolling with easing */
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  font-size:17px;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- Side navigation ---------- */
+.sidenav{
+  position:fixed;
+  top:50%;
+  left:24px;
+  transform:translateY(-50%);
+  width:var(--nav-w);
+  background:rgba(24,24,29,.85);
+  backdrop-filter:blur(12px);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:14px 10px;
+  z-index:100;
+  max-height:88vh;
+  overflow-y:auto;
+}
+.sidenav a{
+  display:flex;align-items:center;gap:12px;
+  padding:9px 12px;border-radius:9px;
+  color:var(--text-dim);text-decoration:none;
+  font-size:13.5px;font-weight:500;letter-spacing:.01em;
+  transition:color .3s ease, background .3s ease;
+  position:relative;
+}
+.sidenav a svg{width:17px;height:17px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s ease}
+.sidenav a:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.sidenav a.active{color:var(--text);background:rgba(245,158,11,.10)}
+.sidenav a.active svg{stroke:var(--accent)}
+.sidenav a.active::before{
+  content:"";position:absolute;left:0;top:50%;
+  transform:translateY(-50%);
+  width:3px;height:55%;border-radius:3px;
+  background:var(--accent);
+}
+.sidenav .divider{height:1px;background:var(--line);margin:8px 12px}
+
+/* ---------- Layout ---------- */
+.page{margin-left:calc(var(--nav-w) + 64px);margin-right:32px}
+.wrap{max-width:var(--max-w);margin:0 auto;padding:0 20px}
+section{padding:96px 0 32px}
+
+/* ---------- Typography ---------- */
+.kicker{
+  display:inline-block;font-size:12px;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:14px;
+}
+h1{font-size:clamp(36px,5vw,56px);line-height:1.12;font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(26px,3.4vw,36px);line-height:1.2;font-weight:750;letter-spacing:-.015em;margin-bottom:20px}
+p{color:var(--text-dim);margin-bottom:18px;max-width:68ch}
+p strong{color:var(--text)}
+.lede{font-size:20px;line-height:1.65;color:var(--text)}
+
+/* ---------- Hero ---------- */
+.hero{padding:110px 0 24px}
+.hero p.sub{font-size:21px;color:var(--text-dim);margin-top:20px;max-width:60ch}
+.meta-row{
+  display:flex;flex-wrap:wrap;gap:28px;
+  margin-top:34px;padding-top:26px;
+  border-top:1px solid var(--line);
+}
+.meta-row div span{display:block;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px}
+.meta-row div b{font-size:15px;font-weight:600;color:var(--text)}
+
+/* ---------- Video embed ---------- */
+.video-embed{
+  position:relative;width:100%;aspect-ratio:16/9;
+  margin:34px 0;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  overflow:hidden;
+  background:#000;
+}
+.video-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+/* ---------- Gallery ---------- */
+.gallery{
+  columns:2;
+  column-gap:18px;
+  margin:34px 0;
+}
+.gallery figure{
+  margin:0 0 18px;
+  break-inside:avoid;
+}
+.gallery img{
+  width:100%;height:auto;display:block;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  background:var(--surface);
+}
+
+/* ---------- Footer ---------- */
+footer{
+  border-top:1px solid var(--line);
+  margin-top:80px;padding:48px 0 72px;
+  text-align:center;color:var(--text-dim);font-size:14px;
+}
+footer a{color:var(--accent);text-decoration:none}
+
+/* ---------- Scroll reveal ---------- */
+.reveal{
+  opacity:0;transform:translateY(28px);
+  transition:opacity .8s cubic-bezier(.22,.61,.36,1), transform .8s cubic-bezier(.22,.61,.36,1);
+}
+.reveal.visible{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1080px){
+  .sidenav{
+    top:auto;bottom:16px;left:50%;
+    transform:translateX(-50%);
+    width:auto;max-width:calc(100vw - 24px);
+    display:flex;gap:2px;padding:8px;
+    overflow-x:auto;max-height:none;
+  }
+  .sidenav a{flex:none;padding:8px 10px}
+  .sidenav a span{display:none}
+  .sidenav a.active::before{display:none}
+  .sidenav .divider{display:none}
+  .page{margin-left:0;margin-right:0}
+  .gallery{columns:1}
+  body{padding-bottom:80px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ SIDE NAVIGATION ============ -->
+<nav class="sidenav" id="sidenav" aria-label="Case study sections">
+  <a href="#overview" class="active">
+    <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10"/></svg>
+    <span>Overview</span>
+  </a>
+  <a href="#reel">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5v-7z"/></svg>
+    <span>Showreel</span>
+  </a>
+  <a href="#illustration">
+    <svg viewBox="0 0 24 24"><path d="M12 19l7-7a4.95 4.95 0 00-7-7l-7 7v7h7zM16 5l3 3"/></svg>
+    <span>Illustration</span>
+  </a>
+  <div class="divider"></div>
+  <a href="#top" data-top>
+    <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+    <span>Back to top</span>
+  </a>
+</nav>
+
+<div class="page" id="top">
+
+  <!-- ============ HERO / OVERVIEW ============ -->
+  <section class="hero" id="overview">
+    <div class="wrap">
+      <span class="kicker reveal">Case Study · Craft Foundation</span>
+      <h1 class="reveal">Animation &amp; Illustration</h1>
+      <p class="sub reveal">Before product design, there were eleven years of animation and illustration for film and TV. That decade of frame-by-frame craft — timing, composition, colour, storytelling — is the foundation everything else in this portfolio is built on.</p>
+      <div class="meta-row reveal">
+        <div><span>Experience</span><b>11 Years</b></div>
+        <div><span>Industry</span><b>Film &amp; TV</b></div>
+        <div><span>Craft</span><b>Animation · Illustration · Design</b></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SHOWREEL ============ -->
+  <section id="reel">
+    <div class="wrap">
+      <span class="kicker reveal">01 — Showreel</span>
+      <h2 class="reveal">The animation reel</h2>
+      <p class="reveal lede">A decade of motion work, cut into a few minutes.</p>
+      <div class="video-embed reveal">
+        <iframe src="https://player.vimeo.com/video/274437505" title="Animation showreel — Joseph Lee" allow="autoplay; fullscreen; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ILLUSTRATION ============ -->
+  <section id="illustration">
+    <div class="wrap">
+      <span class="kicker reveal">02 — Illustration &amp; Design</span>
+      <h2 class="reveal">Selected stills</h2>
+      <p class="reveal lede">Illustration and design work from across those eleven years.</p>
+      <div class="gallery">
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/5efd438abe300200045dd0b6/96GdTDiapedoXcWW.jpg" alt="Illustration" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/5efd438abe300200045dd0b6/u3AzCjDG3gO9aRpi.jpg" alt="Illustration" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/5efd438abe300200045dd0b6/1fw7Pexzr9vWsMJz.jpg" alt="Illustration" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/5efd438abe300200045dd0b6/30JVUnZAi8YnBZcy.jpg" alt="Illustration" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/5efd438abe300200045dd0b6/mBFHbHf5Ccggrzmf.jpg" alt="Illustration" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/5efd438abe300200045dd0b6/hyhVE3LWutt71Bmc.jpg" alt="Illustration" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/5efd438abe300200045dd0b6/ycb3RfO7f8JaSzGC.jpg" alt="Illustration" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/5efd438abe300200045dd0b6/YQzhc2PjbNxSOqwY.jpg" alt="Illustration" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/5efd438abe300200045dd0b6/wWQvTOEgEACCuYlc.jpg" alt="Illustration" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/5efd438abe300200045dd0b6/ZiGfeybuuUJvZaXS.jpg" alt="Illustration" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/5efd438abe300200045dd0b6/V2LnbLU13Go74blM.jpg" alt="Illustration" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/5efd438abe300200045dd0b6/F4Vgsz0jY0IN2oKS.jpg" alt="Illustration" loading="lazy"></figure>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <p style="margin:0">Animation &amp; Illustration — by <a href="https://www.joemlee.com">Joseph Lee</a></p>
+    </div>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   SMOOTH EASED SCROLLING — custom requestAnimationFrame tween
+   ============================================================ */
+(function(){
+  const DURATION = 900;
+  let rafId = null;
+
+  function easeInOutCubic(t){
+    return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2;
+  }
+
+  function animateScrollTo(targetY){
+    if (rafId) cancelAnimationFrame(rafId);
+    const startY = window.scrollY;
+    const maxY = document.documentElement.scrollHeight - window.innerHeight;
+    const destY = Math.max(0, Math.min(targetY, maxY));
+    const delta = destY - startY;
+    if (Math.abs(delta) < 1) return;
+    const start = performance.now();
+    function step(now){
+      const t = Math.min((now - start) / DURATION, 1);
+      window.scrollTo(0, startY + delta * easeInOutCubic(t));
+      if (t < 1) rafId = requestAnimationFrame(step);
+      else rafId = null;
+    }
+    rafId = requestAnimationFrame(step);
+  }
+
+  ['wheel','touchstart','keydown'].forEach(evt =>
+    window.addEventListener(evt, () => { if (rafId){ cancelAnimationFrame(rafId); rafId = null; } }, {passive:true})
+  );
+
+  const navLinks = Array.from(document.querySelectorAll('.sidenav a'));
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      if (link.hasAttribute('data-top')) { animateScrollTo(0); return; }
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target){
+        const y = target.getBoundingClientRect().top + window.scrollY - 24;
+        animateScrollTo(y);
+      }
+    });
+  });
+
+  /* ---------- Scrollspy ---------- */
+  const sections = Array.from(document.querySelectorAll('section[id]'));
+  function updateActive(){
+    const probe = window.scrollY + window.innerHeight * 0.35;
+    let current = sections[0];
+    for (const s of sections){ if (s.offsetTop <= probe) current = s; }
+    navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current.id));
+  }
+  window.addEventListener('scroll', updateActive, {passive:true});
+  updateActive();
+
+  /* ---------- Scroll-reveal ---------- */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting){ en.target.classList.add('visible'); io.unobserve(en.target); }
+    });
+  }, {threshold: 0.12, rootMargin: '0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+})();
+</script>
+</body>
+</html>
