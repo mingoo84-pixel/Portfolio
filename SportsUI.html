@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sports White Label UI — Joseph Lee</title>
+<meta name="description" content="Design once, ship every brand — a white-label UI module system for mobile sports streaming. A case study by Joseph Lee.">
+<style>
+/* ============================================================
+   WHITE-LABEL THEME — edit these variables to rebrand the
+   entire case study. Everything below inherits from here.
+   ============================================================ */
+:root{
+  --bg:           #0d0f12;   /* page background */
+  --surface:      #15181d;   /* cards & panels */
+  --surface-2:    #1c2027;   /* raised surface */
+  --line:         #2a2f38;   /* hairlines */
+  --text:         #e9ecf1;   /* body text */
+  --text-dim:     #9aa1ad;   /* secondary text */
+  --accent:       #a3e635;   /* primary brand colour (court lime) */
+  --accent-2:     #8b5cf6;   /* secondary accent (broadcast violet) */
+  --nav-w:        232px;
+  --max-w:        860px;
+  --radius:       14px;
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto} /* JS handles smooth scrolling with easing */
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  font-size:17px;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- Side navigation ---------- */
+.sidenav{
+  position:fixed;
+  top:50%;
+  left:24px;
+  transform:translateY(-50%);
+  width:var(--nav-w);
+  background:rgba(21,24,29,.85);
+  backdrop-filter:blur(12px);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:14px 10px;
+  z-index:100;
+  max-height:88vh;
+  overflow-y:auto;
+}
+.sidenav a{
+  display:flex;align-items:center;gap:12px;
+  padding:9px 12px;border-radius:9px;
+  color:var(--text-dim);text-decoration:none;
+  font-size:13.5px;font-weight:500;letter-spacing:.01em;
+  transition:color .3s ease, background .3s ease;
+  position:relative;
+}
+.sidenav a svg{width:17px;height:17px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s ease}
+.sidenav a:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.sidenav a.active{color:var(--text);background:rgba(163,230,53,.10)}
+.sidenav a.active svg{stroke:var(--accent)}
+.sidenav a.active::before{
+  content:"";position:absolute;left:0;top:50%;
+  transform:translateY(-50%);
+  width:3px;height:55%;border-radius:3px;
+  background:var(--accent);
+}
+.sidenav .divider{height:1px;background:var(--line);margin:8px 12px}
+
+/* ---------- Layout ---------- */
+.page{margin-left:calc(var(--nav-w) + 64px);margin-right:32px}
+.wrap{max-width:var(--max-w);margin:0 auto;padding:0 20px}
+section{padding:96px 0 32px}
+
+/* ---------- Typography ---------- */
+.kicker{
+  display:inline-block;font-size:12px;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:14px;
+}
+h1{font-size:clamp(36px,5vw,56px);line-height:1.12;font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(26px,3.4vw,36px);line-height:1.2;font-weight:750;letter-spacing:-.015em;margin-bottom:20px}
+h3{font-size:20px;font-weight:700;margin:36px 0 12px}
+p{color:var(--text-dim);margin-bottom:18px;max-width:68ch}
+p strong, li strong{color:var(--text)}
+.lede{font-size:20px;line-height:1.65;color:var(--text)}
+ul.clean{list-style:none;margin-bottom:18px}
+ul.clean li{position:relative;padding-left:26px;margin-bottom:10px;color:var(--text-dim)}
+ul.clean li::before{
+  content:"";position:absolute;left:4px;top:11px;
+  width:7px;height:7px;border-radius:2px;
+  background:var(--accent);transform:rotate(45deg);
+}
+
+/* ---------- Hero ---------- */
+.hero{padding:110px 0 24px}
+.hero-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:40px;align-items:center}
+.hero p.sub{font-size:20px;color:var(--text-dim);margin-top:20px;max-width:60ch}
+.meta-row{
+  display:flex;flex-wrap:wrap;gap:28px;
+  margin-top:34px;padding-top:26px;
+  border-top:1px solid var(--line);
+}
+.meta-row div span{display:block;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px}
+.meta-row div b{font-size:15px;font-weight:600;color:var(--text)}
+
+/* ---------- Callouts, stats & cards ---------- */
+.callout{
+  background:linear-gradient(135deg, rgba(163,230,53,.07), rgba(139,92,246,.07));
+  border:1px solid var(--line);
+  border-left:3px solid var(--accent);
+  border-radius:var(--radius);
+  padding:26px 30px;margin:34px 0;
+}
+.callout p{margin:0;color:var(--text);font-size:18.5px;line-height:1.6}
+
+.stat-band{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:38px 0}
+.stat-band .stat{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);padding:26px 22px;text-align:center;
+}
+.stat-band .num{
+  font-size:44px;font-weight:800;letter-spacing:-.02em;
+  background:linear-gradient(120deg,var(--accent),var(--accent-2));
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;line-height:1.1;
+}
+.stat-band .lbl{font-size:13px;color:var(--text-dim);margin-top:6px;letter-spacing:.04em;text-transform:uppercase;font-weight:600}
+
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:34px 0}
+.card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);padding:24px 26px;
+}
+.card .n{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:30px;border-radius:8px;
+  background:rgba(163,230,53,.12);color:var(--accent);
+  font-weight:800;font-size:14px;margin-bottom:12px;
+}
+.card p{margin:0;font-size:15.5px}
+.card b{display:block;color:var(--text);font-size:16px;margin-bottom:6px}
+
+.quote{margin:44px 0;padding:8px 0 8px 28px;border-left:3px solid var(--accent-2)}
+.quote p{font-size:23px;line-height:1.5;color:var(--text);font-weight:600;margin:0;letter-spacing:-.01em}
+.quote span{display:block;margin-top:10px;font-size:14px;color:var(--text-dim)}
+
+/* ---------- Module library ---------- */
+.module{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:26px;margin:30px 0;
+}
+.module h4{font-size:19px;font-weight:750;color:var(--text);margin-bottom:6px}
+.module .chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 20px}
+.module .chip{
+  font-size:11.5px;font-weight:600;letter-spacing:.03em;
+  padding:4px 11px;border-radius:99px;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  color:var(--text-dim);
+}
+.module .chip.hl{background:rgba(139,92,246,.14);border-color:rgba(139,92,246,.35);color:#c4b0fa}
+.mod-imgs{display:grid;grid-template-columns:1fr 1.9fr;gap:16px;align-items:start}
+.mod-col .lbl{
+  font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text-dim);margin-bottom:8px;
+}
+.modcrop{
+  width:100%;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background-color:#3a3e44;
+  background-repeat:no-repeat;
+}
+.mod-note{font-size:14px;color:var(--text-dim);margin:16px 0 0}
+
+/* ---------- 3D phone with auto-scrolling screen ---------- */
+.phone-stage{
+  display:flex;justify-content:center;
+  perspective:1400px;
+  padding:20px 0;
+}
+.phone{
+  --pw:260px;
+  width:var(--pw);
+  transform:rotateY(-18deg) rotateX(4deg);
+  transform-style:preserve-3d;
+  background:#1a1d22;
+  border:2px solid #2e333b;
+  border-radius:44px;
+  padding:12px;
+  box-shadow:
+    -30px 40px 60px -25px rgba(0,0,0,.65),
+    inset 0 0 4px rgba(255,255,255,.08);
+  position:relative;
+}
+.phone::after{ /* side edge sheen */
+  content:"";position:absolute;inset:6px;border-radius:38px;
+  pointer-events:none;
+  background:linear-gradient(105deg, rgba(255,255,255,.07), transparent 30%);
+}
+.phone .notch{
+  position:absolute;top:22px;left:50%;transform:translateX(-50%);
+  width:38%;height:22px;background:#0a0c0e;border-radius:12px;z-index:3;
+}
+.phone .screen{
+  border-radius:32px;
+  overflow:hidden;
+  background:#000;
+  height:calc(var(--pw) * 2.05);
+  position:relative;
+}
+.phone .screen img{
+  width:100%;display:block;
+  will-change:transform;
+}
+.phone.playing .screen img{
+  animation:autoscroll var(--dur,20s) ease-in-out infinite;
+}
+@keyframes autoscroll{
+  0%   {transform:translateY(0)}
+  44%  {transform:translateY(var(--scroll,0px))}
+  56%  {transform:translateY(var(--scroll,0px))}
+  100% {transform:translateY(0)}
+}
+@media (prefers-reduced-motion: reduce){
+  .phone.playing .screen img{animation:none}
+}
+.phone-cap{text-align:center;font-size:13.5px;color:var(--text-dim);margin-top:14px}
+.phone-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:48px 24px;margin:40px 0;
+}
+.phone-grid .phone{--pw:230px;margin:0 auto}
+.phone-grid > div:nth-child(even) .phone{transform:rotateY(18deg) rotateX(4deg);box-shadow:30px 40px 60px -25px rgba(0,0,0,.65), inset 0 0 4px rgba(255,255,255,.08)}
+
+/* ---------- Footer ---------- */
+footer{
+  border-top:1px solid var(--line);
+  margin-top:80px;padding:48px 0 72px;
+  text-align:center;color:var(--text-dim);font-size:14px;
+}
+footer a{color:var(--accent);text-decoration:none}
+
+/* ---------- Scroll reveal ---------- */
+.reveal{
+  opacity:0;transform:translateY(28px);
+  transition:opacity .8s cubic-bezier(.22,.61,.36,1), transform .8s cubic-bezier(.22,.61,.36,1);
+}
+.reveal.visible{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1080px){
+  .sidenav{
+    top:auto;bottom:16px;left:50%;
+    transform:translateX(-50%);
+    width:auto;max-width:calc(100vw - 24px);
+    display:flex;gap:2px;padding:8px;
+    overflow-x:auto;max-height:none;
+  }
+  .sidenav a{flex:none;padding:8px 10px}
+  .sidenav a span{display:none}
+  .sidenav a.active::before{display:none}
+  .sidenav .divider{display:none}
+  .page{margin-left:0;margin-right:0}
+  .hero-grid{grid-template-columns:1fr}
+  .stat-band{grid-template-columns:repeat(3,1fr);gap:10px}
+  .card-grid,.phone-grid{grid-template-columns:1fr}
+  .mod-imgs{grid-template-columns:1fr}
+  body{padding-bottom:80px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ SIDE NAVIGATION ============ -->
+<nav class="sidenav" id="sidenav" aria-label="Case study sections">
+  <a href="#overview" class="active">
+    <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10"/></svg>
+    <span>Overview</span>
+  </a>
+  <a href="#case">
+    <svg viewBox="0 0 24 24"><path d="M12 3v18M5.5 7.5L12 3l6.5 4.5M5.5 16.5L12 21l6.5-4.5"/><circle cx="12" cy="12" r="3.5"/></svg>
+    <span>The Case</span>
+  </a>
+  <a href="#library">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
+    <span>Module Library</span>
+  </a>
+  <a href="#final">
+    <svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="3"/><path d="M11 18h2"/></svg>
+    <span>Final UI</span>
+  </a>
+  <a href="#learnings">
+    <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-9 8.35 8.5 8.5 0 01-3.4-.7L3 21l1.85-5.6A8.38 8.38 0 1121 11.5z"/></svg>
+    <span>Learnings</span>
+  </a>
+  <div class="divider"></div>
+  <a href="#top" data-top>
+    <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+    <span>Back to top</span>
+  </a>
+</nav>
+
+<div class="page" id="top">
+
+  <!-- ============ HERO / OVERVIEW ============ -->
+  <section class="hero" id="overview">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <span class="kicker reveal">Case Study · Mobile Sports Streaming</span>
+          <h1 class="reveal">Design once, ship every brand</h1>
+          <p class="sub reveal">A white-label UI module system for mobile sports streaming — one set of components robust enough to become the NBA, the Premier League, or the ATP Tour without touching a single layout.</p>
+          <div class="meta-row reveal">
+            <div><span>Role</span><b>Lead Designer</b></div>
+            <div><span>Platform</span><b>iOS &amp; Android</b></div>
+            <div><span>System</span><b>Material 3</b></div>
+          </div>
+        </div>
+        <div class="phone-stage reveal">
+          <div class="phone" data-autoscroll>
+            <div class="notch"></div>
+            <div class="screen">
+              <img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/6735add1b8ae7b0002db426c/XbTseYzmllFsDrrS.png" alt="Sports streaming app — full screen scroll">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ THE CASE ============ -->
+  <section id="case">
+    <div class="wrap">
+      <span class="kicker reveal">01 — The Case for White Label</span>
+      <h2 class="reveal">One platform. Indefinite brands. Zero redesigns.</h2>
+      <p class="reveal lede">Every sports brand that joins a streaming platform usually triggers the same expensive ritual: redesign the app, restyle every screen, rebuild the components. Multiply that by every league, federation and tour the platform wants to sign — and design becomes the bottleneck to growth.</p>
+      <p class="reveal">The white-label answer flips the economics. As Lead Designer, I owned the creation of a module system where <strong>every component is designed exactly once</strong> — then rebranded indefinitely. The design department restyles wireframes instead of redrawing them; the front-end team builds one generic component per module, synced directly to backend data streams. A new brand becomes a theming exercise, not a project.</p>
+      <div class="callout reveal">
+        <p><strong>The goal:</strong> a scalable UI module system robust enough to be rebranded seamlessly across an indefinite number of sports brands — without sacrificing how good any single brand looks.</p>
+      </div>
+      <h3 class="reveal">What makes white label hard</h3>
+      <div class="card-grid">
+        <div class="card reveal"><span class="n">1</span><p><b>Every edge case, every sport</b>Score, match state, player vs team, font selection — each module must absorb whatever any sport throws at it.</p></div>
+        <div class="card reveal"><span class="n">2</span><p><b>Every rebrand stylisation</b>Colours, logos, corner radii, elevation, typography — all swappable without breaking a layout.</p></div>
+        <div class="card reveal"><span class="n">3</span><p><b>Beautiful by default</b>Each module has to be visually compelling without sacrificing a single one of those scalable options.</p></div>
+        <div class="card reveal"><span class="n">4</span><p><b>Built once, synced live</b>Generic front-end components hook into backend data streams — the design has to map cleanly to the data.</p></div>
+      </div>
+      <div class="stat-band reveal">
+        <div class="stat"><div class="num">10</div><div class="lbl">Module Types</div></div>
+        <div class="stat"><div class="num">∞</div><div class="lbl">Rebrands</div></div>
+        <div class="stat"><div class="num">2</div><div class="lbl">Platforms</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MODULE LIBRARY ============ -->
+  <section id="library">
+    <div class="wrap">
+      <span class="kicker reveal">02 — The Module Library</span>
+      <h2 class="reveal">Ten modules, every sport, any brand</h2>
+      <p class="reveal lede">Each module ships in two states: the <strong>white-label base</strong> — placeholder anatomy with its content structure locked — and the <strong>rebrand</strong>, where colour, type, imagery and team data pour in. Base on the left, rebranded examples on the right.</p>
+
+      <!-- Each .modcrop is cropped at runtime from the original composite via data attributes -->
+      <div class="module reveal">
+        <h4>4:4 Hero Card</h4>
+        <div class="chips"><span class="chip hl">Content type</span><span class="chip">Custom colours (light & dark)</span><span class="chip">Corner radius</span><span class="chip">Card elevation</span><span class="chip">Imagery</span></div>
+        <div class="mod-imgs">
+          <div class="mod-col"><div class="lbl">White-label base</div><div class="modcrop" data-file="Msu4po0ddmEcPyZ0.png" data-x0=".02" data-x1=".24" data-y0=".16" data-y1=".60"></div></div>
+          <div class="mod-col"><div class="lbl">Rebranded — Premier League · NBA · ATP</div><div class="modcrop" data-file="Msu4po0ddmEcPyZ0.png" data-x0=".32" data-x1=".95" data-y0=".16" data-y1=".63"></div></div>
+        </div>
+      </div>
+
+      <div class="module reveal">
+        <h4>Player Cards</h4>
+        <div class="chips"><span class="chip hl">3 sizes</span><span class="chip">Team colours</span><span class="chip">Player imagery</span><span class="chip">Stat fields</span><span class="chip">Font</span></div>
+        <div class="mod-imgs">
+          <div class="mod-col"><div class="lbl">White-label base — L / M / S</div><div class="modcrop" data-file="xEDvy2LOLa6fmgx7.png" data-x0=".04" data-x1=".32" data-y0=".04" data-y1=".62"></div></div>
+          <div class="mod-col"><div class="lbl">Rebranded — football · basketball · tennis</div><div class="modcrop" data-file="xEDvy2LOLa6fmgx7.png" data-x0=".40" data-x1=".96" data-y0=".04" data-y1=".99"></div></div>
+        </div>
+        <p class="mod-note">Same anatomy at three densities — a hero player spotlight down to a compact stat row.</p>
+      </div>
+
+      <div class="module reveal">
+        <h4>Stats</h4>
+        <div class="chips"><span class="chip hl">Data points</span><span class="chip">Team logos</span><span class="chip">Team colours</span><span class="chip">Custom colours (light & dark)</span><span class="chip">Card elevation</span><span class="chip">Corner radius</span><span class="chip">Font</span></div>
+        <div class="mod-imgs">
+          <div class="mod-col"><div class="lbl">White-label base</div><div class="modcrop" data-file="z4Z0HQ5MG7dE061X.png" data-x0=".03" data-x1=".22" data-y0=".08" data-y1=".53"></div></div>
+          <div class="mod-col"><div class="lbl">Rebranded + bespoke stats cards</div><div class="modcrop" data-file="z4Z0HQ5MG7dE061X.png" data-x0=".28" data-x1=".98" data-y0=".02" data-y1=".76"></div></div>
+        </div>
+        <p class="mod-note">Beyond the generic compare module, bespoke cards — Match Pulse, Heatmap, Playing Style, Rivalries — show how far a brand can push within the system.</p>
+      </div>
+
+      <div class="module reveal">
+        <h4>E-Commerce</h4>
+        <div class="chips"><span class="chip hl">Shopify integration</span><span class="chip">Imagery</span><span class="chip">Custom colours (light & dark)</span><span class="chip">Card elevation</span><span class="chip">Corner radius</span><span class="chip">Font</span></div>
+        <div class="mod-imgs">
+          <div class="mod-col"><div class="lbl">White-label base</div><div class="modcrop" data-file="WviQx7Vu6vni9nKb.png" data-x0=".06" data-x1=".29" data-y0=".14" data-y1=".59"></div></div>
+          <div class="mod-col"><div class="lbl">Rebranded — kit, merch, equipment</div><div class="modcrop" data-file="WviQx7Vu6vni9nKb.png" data-x0=".37" data-x1=".99" data-y0=".14" data-y1=".59"></div></div>
+        </div>
+        <p class="mod-note">The monetisation module — every brand's storefront, straight into the content feed.</p>
+      </div>
+
+      <div class="module reveal">
+        <h4>Score Pills</h4>
+        <div class="chips"><span class="chip hl">Live / scheduled / fulltime states</span><span class="chip">Team logos</span><span class="chip">Team colours</span><span class="chip">Custom colours</span><span class="chip">Corner radius</span><span class="chip">Font</span></div>
+        <div class="mod-imgs">
+          <div class="mod-col"><div class="lbl">White-label base</div><div class="modcrop" data-file="s5VXoga1Fw505IuR.png" data-x0=".05" data-x1=".28" data-y0=".09" data-y1=".31"></div></div>
+          <div class="mod-col"><div class="lbl">Rebranded — EPL · NBA · ATP</div><div class="modcrop" data-file="s5VXoga1Fw505IuR.png" data-x0=".36" data-x1=".68" data-y0=".09" data-y1=".68"></div></div>
+        </div>
+        <p class="mod-note">One pill handles every match state — live, scheduled and fulltime — across team and head-to-head sports.</p>
+      </div>
+
+      <div class="module reveal">
+        <h4>Ladder / Standings</h4>
+        <div class="chips"><span class="chip hl">Brand colours</span><span class="chip">Team logos</span><span class="chip">Team colours</span><span class="chip">Card elevation</span><span class="chip">Corner radius</span><span class="chip">Font</span></div>
+        <div class="mod-imgs">
+          <div class="mod-col"><div class="lbl">White-label base</div><div class="modcrop" data-file="Yu0qQwWqLTBAHsEj.png" data-x0=".05" data-x1=".28" data-y0=".08" data-y1=".52"></div></div>
+          <div class="mod-col"><div class="lbl">Rebranded — Premier League · Eastern Conference</div><div class="modcrop" data-file="Yu0qQwWqLTBAHsEj.png" data-x0=".36" data-x1=".80" data-y0=".08" data-y1=".67"></div></div>
+        </div>
+        <p class="mod-note">The table flexes to each competition's format — PL/GD/PTS for football, W/L/PCT for basketball.</p>
+      </div>
+
+      <div class="module reveal">
+        <h4>News Card</h4>
+        <div class="chips"><span class="chip hl">Content thumbnail</span><span class="chip">Metadata</span><span class="chip">Custom colours (light & dark)</span><span class="chip">Card elevation</span><span class="chip">Corner radius</span><span class="chip">Font</span></div>
+        <div class="mod-imgs">
+          <div class="mod-col"><div class="lbl">White-label base — 3 layouts</div><div class="modcrop" data-file="k2PWNWIlfTxv8i03.png" data-x0=".04" data-x1=".28" data-y0=".07" data-y1=".56"></div></div>
+          <div class="mod-col"><div class="lbl">Rebranded — vertical, horizontal and banner</div><div class="modcrop" data-file="k2PWNWIlfTxv8i03.png" data-x0=".35" data-x1=".99" data-y0=".07" data-y1=".72"></div></div>
+        </div>
+      </div>
+
+      <div class="module reveal">
+        <h4>16:9 Video</h4>
+        <div class="chips"><span class="chip hl">Content thumbnail</span><span class="chip">Metadata</span><span class="chip">Custom colours (light & dark)</span><span class="chip">Card elevation</span><span class="chip">Corner radius</span><span class="chip">Font</span></div>
+        <div class="mod-imgs">
+          <div class="mod-col"><div class="lbl">White-label base</div><div class="modcrop" data-file="6eDH3VJIBwTbHggw.png" data-x0=".04" data-x1=".27" data-y0=".10" data-y1=".52"></div></div>
+          <div class="mod-col"><div class="lbl">Rebranded — full match &amp; feature video</div><div class="modcrop" data-file="6eDH3VJIBwTbHggw.png" data-x0=".35" data-x1=".99" data-y0=".10" data-y1=".52"></div></div>
+        </div>
+      </div>
+
+      <div class="module reveal">
+        <h4>Social Video (9:16)</h4>
+        <div class="chips"><span class="chip hl">Content thumbnail</span><span class="chip">Metadata</span><span class="chip">Card elevation</span><span class="chip">Corner radius</span><span class="chip">Font</span></div>
+        <div class="mod-imgs">
+          <div class="mod-col"><div class="lbl">White-label base</div><div class="modcrop" data-file="IBKECHFLFm2b5j3x.png" data-x0=".03" data-x1=".19" data-y0=".08" data-y1=".58"></div></div>
+          <div class="mod-col"><div class="lbl">Rebranded — vertical social clips</div><div class="modcrop" data-file="IBKECHFLFm2b5j3x.png" data-x0=".34" data-x1=".72" data-y0=".08" data-y1=".58"></div></div>
+        </div>
+        <p class="mod-note">Vertical clips meet Gen Z where they already scroll — the platform's bridge to social-native content.</p>
+      </div>
+
+      <div class="module reveal">
+        <h4>Video Highlights</h4>
+        <div class="chips"><span class="chip hl">Content thumbnail</span><span class="chip">Metadata</span><span class="chip">Custom colours (light & dark)</span><span class="chip">Card elevation</span><span class="chip">Corner radius</span><span class="chip">Font</span></div>
+        <div class="mod-imgs">
+          <div class="mod-col"><div class="lbl">White-label base</div><div class="modcrop" data-file="CFLIz3GasMbC4W8g.png" data-x0=".02" data-x1=".25" data-y0=".15" data-y1=".48"></div></div>
+          <div class="mod-col"><div class="lbl">Rebranded — football · NBA · tennis</div><div class="modcrop" data-file="CFLIz3GasMbC4W8g.png" data-x0=".33" data-x1=".90" data-y0=".15" data-y1=".48"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINAL UI ============ -->
+  <section id="final">
+    <div class="wrap">
+      <span class="kicker reveal">03 — Final UI</span>
+      <h2 class="reveal">The proof: one app, four brands</h2>
+      <p class="reveal lede">The final screens, designed in Figma to Material 3 and compatible with iOS and Android. Some modules use a frosted-glass treatment so the brand colour bleeds through, creating depth without costing any customisation.</p>
+      <ul class="clean reveal">
+        <li><strong>Top pill navigation won in testing</strong> — fans preferred it because it carries many sub-navigation options without burying content.</li>
+        <li><strong>Frosted-glass module surfaces</strong> let each brand's background colour shine through the same component.</li>
+        <li>Every phone below is the <strong>same module stack</strong> — only the theme changes.</li>
+      </ul>
+
+      <div class="phone-grid">
+        <div>
+          <div class="phone-stage"><div class="phone" data-autoscroll>
+            <div class="notch"></div>
+            <div class="screen"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/6735add1b8ae7b0002db426c/YieMKv9VZxZJhpPO.png" alt="White-label base app"></div>
+          </div></div>
+          <div class="phone-cap"><strong>White-label base</strong> — the placeholder anatomy every brand starts from</div>
+        </div>
+        <div>
+          <div class="phone-stage"><div class="phone" data-autoscroll>
+            <div class="notch"></div>
+            <div class="screen"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/6735add1b8ae7b0002db426c/UkUWoGHIpgq6qDfX.png" alt="Premier League Chelsea themed app"></div>
+          </div></div>
+          <div class="phone-cap"><strong>Premier League — Chelsea</strong> — deep blue, club crests, match-day focus</div>
+        </div>
+        <div>
+          <div class="phone-stage"><div class="phone" data-autoscroll>
+            <div class="notch"></div>
+            <div class="screen"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/6735add1b8ae7b0002db426c/vVTbizqTMDmGSEvs.png" alt="NBA Lakers themed app"></div>
+          </div></div>
+          <div class="phone-cap"><strong>NBA — LA Lakers</strong> — team purple, live score pills, halftime stats</div>
+        </div>
+        <div>
+          <div class="phone-stage"><div class="phone" data-autoscroll>
+            <div class="notch"></div>
+            <div class="screen"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/6735add1b8ae7b0002db426c/zoI0PQaYJPZJsYwe.png" alt="ATP Miami Open themed app"></div>
+          </div></div>
+          <div class="phone-cap"><strong>ATP — Miami Open</strong> — tournament theming with bespoke typography</div>
+        </div>
+      </div>
+
+      <h3 class="reveal">League-wide theming</h3>
+      <p class="reveal">The system scales beyond clubs to whole-league apps — same modules, league-level branding:</p>
+      <div class="phone-stage reveal">
+        <div class="phone" data-autoscroll>
+          <div class="notch"></div>
+          <div class="screen"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/6735add1b8ae7b0002db426c/tOpmXxplsc35Ej5H.png" alt="NBA league-wide themed app"></div>
+        </div>
+      </div>
+      <div class="phone-cap reveal"><strong>NBA league-wide</strong> — highlights, trending, full replays, ladder and results</div>
+    </div>
+  </section>
+
+  <!-- ============ LEARNINGS ============ -->
+  <section id="learnings">
+    <div class="wrap">
+      <span class="kicker reveal">04 — Learnings</span>
+      <h2 class="reveal">Function first — by design</h2>
+      <div class="quote reveal">
+        <p>"In a white-label system, function beats form — every module must declare its purpose instantly, under any brand."</p>
+        <span>— The principle that held the system together</span>
+      </div>
+      <p class="reveal">A module that only looks right in one theme is a broken module. Designing for an indefinite number of brands forces a discipline: anatomy first, stylisation second — and the system rewards it with every rebrand that ships in days, not months.</p>
+      <p class="reveal"><strong>What's next:</strong> the honest trade-off of white labelling is sameness. Repeating identical modules across every brand eventually feels formulaic — so the next iteration introduces more bespoke, brand-specific modules (like the bespoke stats cards) layered on top of the shared system. The base pays the bills; the bespoke layer creates the delight.</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <p style="margin:0">Sports White Label UI — a case study by <a href="https://www.joemlee.com">Joseph Lee</a></p>
+    </div>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   SMOOTH EASED SCROLLING — custom requestAnimationFrame tween
+   ============================================================ */
+(function(){
+  const DURATION = 900;
+  let rafId = null;
+
+  function easeInOutCubic(t){
+    return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2;
+  }
+
+  function animateScrollTo(targetY){
+    if (rafId) cancelAnimationFrame(rafId);
+    const startY = window.scrollY;
+    const maxY = document.documentElement.scrollHeight - window.innerHeight;
+    const destY = Math.max(0, Math.min(targetY, maxY));
+    const delta = destY - startY;
+    if (Math.abs(delta) < 1) return;
+    const start = performance.now();
+    function step(now){
+      const t = Math.min((now - start) / DURATION, 1);
+      window.scrollTo(0, startY + delta * easeInOutCubic(t));
+      if (t < 1) rafId = requestAnimationFrame(step);
+      else rafId = null;
+    }
+    rafId = requestAnimationFrame(step);
+  }
+
+  ['wheel','touchstart','keydown'].forEach(evt =>
+    window.addEventListener(evt, () => { if (rafId){ cancelAnimationFrame(rafId); rafId = null; } }, {passive:true})
+  );
+
+  const navLinks = Array.from(document.querySelectorAll('.sidenav a'));
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      if (link.hasAttribute('data-top')) { animateScrollTo(0); return; }
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target){
+        const y = target.getBoundingClientRect().top + window.scrollY - 24;
+        animateScrollTo(y);
+      }
+    });
+  });
+
+  /* ---------- Scrollspy ---------- */
+  const sections = Array.from(document.querySelectorAll('section[id]'));
+  function updateActive(){
+    const probe = window.scrollY + window.innerHeight * 0.35;
+    let current = sections[0];
+    for (const s of sections){ if (s.offsetTop <= probe) current = s; }
+    navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current.id));
+  }
+  window.addEventListener('scroll', updateActive, {passive:true});
+  updateActive();
+
+  /* ---------- Scroll-reveal ---------- */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting){ en.target.classList.add('visible'); io.unobserve(en.target); }
+    });
+  }, {threshold: 0.12, rootMargin: '0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+})();
+
+/* ============================================================
+   RUNTIME MODULE CROPS — each .modcrop shows a region of the
+   original composite, defined by fractional bounds (x0..x1, y0..y1).
+   Tweak the data-* attributes in the HTML to adjust framing.
+   ============================================================ */
+(function(){
+  const BASE = "https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/6735add1b8ae7b0002db426c/";
+  const cache = {};
+  document.querySelectorAll('.modcrop').forEach(el => {
+    const f = el.dataset.file;
+    const x0 = +el.dataset.x0, x1 = +el.dataset.x1;
+    const y0 = +el.dataset.y0, y1 = +el.dataset.y1;
+    const apply = (W, H) => {
+      const cw = (x1 - x0) * W, ch = (y1 - y0) * H;
+      el.style.aspectRatio = (cw / ch).toFixed(4);
+      el.style.backgroundImage = `url("${BASE + f}")`;
+      el.style.backgroundSize = (100 / (x1 - x0)).toFixed(2) + '% auto';
+      const px = (x1 - x0) >= 1 ? 0 : (x0 / (1 - (x1 - x0))) * 100;
+      const py = (y1 - y0) >= 1 ? 0 : (y0 / (1 - (y1 - y0))) * 100;
+      el.style.backgroundPosition = px.toFixed(2) + '% ' + py.toFixed(2) + '%';
+    };
+    if (cache[f]) { cache[f].then(d => apply(d.w, d.h)); return; }
+    cache[f] = new Promise(res => {
+      const img = new Image();
+      img.onload = () => res({w: img.naturalWidth, h: img.naturalHeight});
+      img.src = BASE + f;
+    });
+    cache[f].then(d => apply(d.w, d.h));
+  });
+})();
+
+/* ============================================================
+   AUTO-SCROLLING PHONES — measures each screenshot and loops
+   a scroll-down / pause / scroll-up animation (ease-in-out).
+   Non-interactive, like a looping GIF. Pauses off-screen.
+   ============================================================ */
+(function(){
+  const SPEED = 55; // px per second of scroll travel — tweak feel here
+  const phones = document.querySelectorAll('.phone[data-autoscroll]');
+
+  phones.forEach(phone => {
+    const screen = phone.querySelector('.screen');
+    const img = screen.querySelector('img');
+    function setup(){
+      const dist = img.offsetHeight - screen.clientHeight;
+      if (dist <= 0) return;
+      img.style.setProperty('--scroll', (-dist) + 'px');
+      // full cycle: down + pause + up; scale duration to travel distance
+      const dur = Math.min(40, Math.max(12, (dist * 2) / SPEED + 4));
+      img.style.setProperty('--dur', dur.toFixed(1) + 's');
+    }
+    if (img.complete && img.naturalWidth) setup();
+    else img.addEventListener('load', setup);
+    window.addEventListener('resize', setup);
+  });
+
+  // Only animate phones that are on screen (saves battery, keeps loops in sync-ish)
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => en.target.classList.toggle('playing', en.isIntersecting));
+  }, {threshold: 0.15});
+  phones.forEach(p => io.observe(p));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multiview — Joseph Lee</title>
+<meta name="description" content="How many streams is too many? Designing Multiview for esports broadcasting — giving fans full control without losing them. A case study by Joseph Lee.">
+<style>
+/* ============================================================
+   WHITE-LABEL THEME — edit these variables to rebrand the
+   entire case study. Everything below inherits from here.
+   ============================================================ */
+:root{
+  --bg:           #0e0f13;   /* page background */
+  --surface:      #16181f;   /* cards & panels */
+  --surface-2:    #1d2029;   /* raised surface */
+  --line:         #2a2e3a;   /* hairlines */
+  --text:         #e8eaf0;   /* body text */
+  --text-dim:     #9aa0b0;   /* secondary text */
+  --accent:       #4f7cff;   /* primary brand colour (broadcast blue) */
+  --accent-2:     #ffc24f;   /* secondary accent (amber) */
+  --nav-w:        232px;     /* sidebar width */
+  --max-w:        820px;     /* article column width */
+  --radius:       14px;
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto} /* JS handles smooth scrolling with easing */
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  font-size:17px;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- Side navigation ---------- */
+.sidenav{
+  position:fixed;
+  top:50%;
+  left:24px;
+  transform:translateY(-50%);
+  width:var(--nav-w);
+  background:rgba(22,24,31,.85);
+  backdrop-filter:blur(12px);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:14px 10px;
+  z-index:100;
+  max-height:88vh;
+  overflow-y:auto;
+}
+.sidenav a{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:9px 12px;
+  border-radius:9px;
+  color:var(--text-dim);
+  text-decoration:none;
+  font-size:13.5px;
+  font-weight:500;
+  letter-spacing:.01em;
+  transition:color .3s ease, background .3s ease;
+  position:relative;
+}
+.sidenav a svg{width:17px;height:17px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s ease}
+.sidenav a:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.sidenav a.active{color:var(--text);background:rgba(79,124,255,.12)}
+.sidenav a.active svg{stroke:var(--accent)}
+.sidenav a.active::before{
+  content:"";
+  position:absolute;left:0;top:50%;
+  transform:translateY(-50%);
+  width:3px;height:55%;
+  border-radius:3px;
+  background:var(--accent);
+}
+.sidenav .divider{height:1px;background:var(--line);margin:8px 12px}
+
+/* ---------- Layout ---------- */
+.page{
+  margin-left:calc(var(--nav-w) + 64px);
+  margin-right:32px;
+}
+.wrap{max-width:var(--max-w);margin:0 auto;padding:0 20px}
+section{padding:96px 0 32px;scroll-margin-top:0}
+
+/* ---------- Typography ---------- */
+.kicker{
+  display:inline-block;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:14px;
+}
+h1{font-size:clamp(36px,5vw,56px);line-height:1.12;font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(26px,3.4vw,36px);line-height:1.2;font-weight:750;letter-spacing:-.015em;margin-bottom:20px}
+h3{font-size:20px;font-weight:700;margin:36px 0 12px}
+p{color:var(--text-dim);margin-bottom:18px;max-width:68ch}
+p strong, li strong{color:var(--text)}
+.lede{font-size:20px;line-height:1.65;color:var(--text)}
+ul.clean{list-style:none;margin-bottom:18px}
+ul.clean li{
+  position:relative;
+  padding-left:26px;
+  margin-bottom:10px;
+  color:var(--text-dim);
+}
+ul.clean li::before{
+  content:"";
+  position:absolute;left:4px;top:11px;
+  width:7px;height:7px;border-radius:2px;
+  background:var(--accent);
+  transform:rotate(45deg);
+}
+
+/* ---------- Hero ---------- */
+.hero{padding:110px 0 24px}
+.hero p.sub{font-size:21px;color:var(--text-dim);margin-top:20px;max-width:60ch}
+.meta-row{
+  display:flex;flex-wrap:wrap;gap:28px;
+  margin-top:34px;padding-top:26px;
+  border-top:1px solid var(--line);
+}
+.meta-row div span{display:block;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px}
+.meta-row div b{font-size:15px;font-weight:600;color:var(--text)}
+
+/* ---------- Imagery ---------- */
+figure{margin:34px 0}
+figure img{
+  width:100%;height:auto;display:block;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  background:var(--surface);
+}
+figcaption{font-size:13.5px;color:var(--text-dim);margin-top:10px;text-align:center}
+.img-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:34px 0}
+.img-grid figure{margin:0}
+.img-grid .span-2{grid-column:span 2}
+.video-embed{
+  position:relative;width:100%;aspect-ratio:16/9;
+  margin:34px 0;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  overflow:hidden;
+  background:var(--surface);
+}
+.video-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+
+/* ---------- Callouts, stats & cards ---------- */
+.callout{
+  background:linear-gradient(135deg, rgba(79,124,255,.09), rgba(255,194,79,.06));
+  border:1px solid var(--line);
+  border-left:3px solid var(--accent);
+  border-radius:var(--radius);
+  padding:26px 30px;
+  margin:34px 0;
+}
+.callout p{margin:0;color:var(--text);font-size:18.5px;line-height:1.6}
+
+.stat-band{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:18px;
+  margin:38px 0;
+}
+.stat-band .stat{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:26px 22px;text-align:center;
+}
+.stat-band .num{
+  font-size:44px;font-weight:800;letter-spacing:-.02em;
+  background:linear-gradient(120deg,var(--accent),var(--accent-2));
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  line-height:1.1;
+}
+.stat-band .lbl{font-size:13px;color:var(--text-dim);margin-top:6px;letter-spacing:.04em;text-transform:uppercase;font-weight:600}
+
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:34px 0}
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:24px 26px;
+}
+.card .n{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:30px;border-radius:8px;
+  background:rgba(79,124,255,.14);color:var(--accent);
+  font-weight:800;font-size:14px;margin-bottom:12px;
+}
+.card p{margin:0;font-size:15.5px}
+.card b{display:block;color:var(--text);font-size:16px;margin-bottom:6px}
+
+.insight-list{counter-reset:ins;list-style:none;margin:30px 0}
+.insight-list li{
+  counter-increment:ins;
+  position:relative;
+  padding:18px 22px 18px 64px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:12px;
+  margin-bottom:12px;
+  color:var(--text);
+  font-size:16.5px;
+}
+.insight-list li::before{
+  content:"0" counter(ins);
+  position:absolute;left:20px;top:50%;transform:translateY(-50%);
+  font-weight:800;font-size:15px;color:var(--accent);
+  letter-spacing:.04em;
+}
+
+.quote{
+  margin:44px 0;padding:8px 0 8px 28px;
+  border-left:3px solid var(--accent-2);
+}
+.quote p{font-size:23px;line-height:1.5;color:var(--text);font-weight:600;margin:0;letter-spacing:-.01em}
+.quote span{display:block;margin-top:10px;font-size:14px;color:var(--text-dim)}
+
+.tag{
+  display:inline-block;font-size:12px;font-weight:700;
+  padding:4px 12px;border-radius:99px;
+  background:rgba(255,194,79,.13);color:var(--accent-2);
+  letter-spacing:.06em;text-transform:uppercase;
+  margin-bottom:14px;
+}
+
+/* ---------- Anatomy blocks (cropped UI + native legend) ---------- */
+.anatomy{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:26px;
+  margin:34px 0;
+}
+.anatomy h4{font-size:18px;font-weight:750;color:var(--text);margin-bottom:18px;letter-spacing:.01em;text-transform:uppercase}
+.crop{
+  width:100%;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background-repeat:no-repeat;
+  background-color:#000;
+}
+.crop-overlay{
+  aspect-ratio:820/460;
+  background-image:url("https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/65bc20e9f7115b0002f7403c/7TdVbsJrFLy0v4Xj.png");
+  background-size:158.5% auto;
+  background-position:96.9% 34.2%;
+}
+.crop-selector{
+  aspect-ratio:840/405;
+  background-image:url("https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/65bc20e9f7115b0002f7403c/KYBu8eleNZFQDf48.png");
+  background-size:154.8% auto;
+  background-position:96.7% 29.7%;
+}
+.legend-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 26px;margin-top:20px}
+.legend-grid .li{display:flex;gap:11px;font-size:14.5px;line-height:1.55;color:var(--text-dim)}
+.legend-grid .dot{
+  flex:none;width:23px;height:23px;border-radius:50%;
+  background:#e23b3b;color:#fff;
+  font-weight:800;font-size:12.5px;
+  display:grid;place-items:center;margin-top:1px;
+}
+.legend-grid b{color:var(--text)}
+@media (max-width:1080px){.legend-grid{grid-template-columns:1fr}}
+
+/* ---------- Step flow (audio process) ---------- */
+.steps{counter-reset:step;margin:34px 0}
+.step{
+  counter-increment:step;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:24px;
+  margin-bottom:20px;
+}
+.step .txt{margin-bottom:16px}
+.step figure{margin:0}
+.step figure img{width:100%;border-radius:10px}
+.step .txt::before{
+  content:"Step " counter(step);
+  display:block;
+  font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:8px;
+}
+.step .txt p{margin:0;color:var(--text);font-size:16px}
+
+/* ---------- Footer ---------- */
+footer{
+  border-top:1px solid var(--line);
+  margin-top:80px;padding:48px 0 72px;
+  text-align:center;color:var(--text-dim);font-size:14px;
+}
+footer a{color:var(--accent-2);text-decoration:none}
+
+/* ---------- Scroll reveal ---------- */
+.reveal{
+  opacity:0;
+  transform:translateY(28px);
+  transition:opacity .8s cubic-bezier(.22,.61,.36,1), transform .8s cubic-bezier(.22,.61,.36,1);
+}
+.reveal.visible{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1080px){
+  .sidenav{
+    top:auto;bottom:16px;left:50%;
+    transform:translateX(-50%);
+    width:auto;max-width:calc(100vw - 24px);
+    display:flex;gap:2px;
+    padding:8px;
+    overflow-x:auto;max-height:none;
+  }
+  .sidenav a{flex:none;padding:8px 10px}
+  .sidenav a span{display:none}
+  .sidenav a.active::before{display:none}
+  .sidenav .divider{display:none}
+  .page{margin-left:0;margin-right:0}
+  .stat-band{grid-template-columns:repeat(3,1fr);gap:10px}
+  .card-grid,.img-grid{grid-template-columns:1fr}
+  .img-grid .span-2{grid-column:span 1}
+  body{padding-bottom:80px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ SIDE NAVIGATION (white-label: edit labels/icons) ============ -->
+<nav class="sidenav" id="sidenav" aria-label="Case study sections">
+  <a href="#overview" class="active">
+    <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10"/></svg>
+    <span>Overview</span>
+  </a>
+  <a href="#question">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 015 .5c0 1.5-2.5 2-2.5 3.5M12 17h.01"/></svg>
+    <span>The Question</span>
+  </a>
+  <a href="#research">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+    <span>Research</span>
+  </a>
+  <a href="#insights">
+    <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.8.7 1 1.5 1 2.5h6c0-1 .2-1.8 1-2.5A6 6 0 0012 3z"/></svg>
+    <span>Insights</span>
+  </a>
+  <a href="#exploration">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+    <span>Exploration</span>
+  </a>
+  <a href="#prototype">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5v-7z"/></svg>
+    <span>Prototype</span>
+  </a>
+  <a href="#final">
+    <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 22h8M12 18v4"/></svg>
+    <span>Final Design</span>
+  </a>
+  <a href="#reflections">
+    <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-9 8.35 8.5 8.5 0 01-3.4-.7L3 21l1.85-5.6A8.38 8.38 0 1121 11.5z"/></svg>
+    <span>Reflections</span>
+  </a>
+  <div class="divider"></div>
+  <a href="#top" data-top>
+    <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+    <span>Back to top</span>
+  </a>
+</nav>
+
+<div class="page" id="top">
+
+  <!-- ============ HERO / OVERVIEW ============ -->
+  <section class="hero" id="overview">
+    <div class="wrap">
+      <span class="kicker reveal">Case Study · Esports Watch Experience</span>
+      <h1 class="reveal">Multiview: how many streams is too many?</h1>
+      <p class="sub reveal">Broadcasting's next frontier promises fans every angle at once. The temptation is always <em>more</em> — more streams, more POVs, more screens. Our research said the opposite: full control only works when the experience stays effortless.</p>
+      <div class="meta-row reveal">
+        <div><span>Role</span><b>UX &amp; Product Design</b></div>
+        <div><span>Domain</span><b>Esports Broadcasting</b></div>
+        <div><span>Title</span><b>League of Legends</b></div>
+        <div><span>Focus</span><b>Research, Interaction Design, Prototyping</b></div>
+      </div>
+      <figure class="reveal">
+        <img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/65bc20e9f7115b0002f7403c/BDmMBygqR7cZCLqr.webp" alt="Multiview as imagined in Back to the Future (1985)" loading="eager">
+        <figcaption>Multiview in <em>Back to the Future Part II</em> — we've been promised this future since 1985.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ THE QUESTION ============ -->
+  <section id="question">
+    <div class="wrap">
+      <span class="kicker reveal">01 — The Question</span>
+      <h2 class="reveal">Everyone agreed Multiview was the future. Nobody agreed what it should be.</h2>
+      <p class="reveal lede">Multiview is fast becoming broadcasting's flagship feature for sports. It feeds Gen Z's appetite for constant stimulation, and it fits the cultural shift sports media is making toward second-screen, stat-driven viewing.</p>
+      <p class="reveal">But "show more streams" isn't a design. Handing fans a wall of video can just as easily bury the match as enhance it. We were tasked with exploring the best possible Multiview experience — and the brief boiled down to three deceptively simple questions:</p>
+      <div class="card-grid reveal">
+        <div class="card"><span class="n">1</span><p><b>How many is right?</b>What's the best number of concurrent streams on one screen before the match stops making sense?</p></div>
+        <div class="card"><span class="n">2</span><p><b>Who gets heard?</b>Five streams can't all talk at once — which audio gets prioritised, and who decides?</p></div>
+        <div class="card"><span class="n">3</span><p><b>Is broadcast enough?</b>The broadcast is professionally directed. Why would viewers ever want extra POVs at all?</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESEARCH ============ -->
+  <section id="research">
+    <div class="wrap">
+      <span class="kicker reveal">02 — Research</span>
+      <h2 class="reveal">One week, eight fans, and a hard truth about "more"</h2>
+      <p class="reveal lede">We spent a week with eight participants canvassing attitudes towards professional League of Legends broadcasts — before showing them a single Multiview concept.</p>
+      <ul class="clean reveal">
+        <li>Attitudes to the original broadcast were <strong>strongly positive</strong> — fans felt it did a great job of showing who was winning and what was happening at any instant.</li>
+        <li>Reactions to the Multiview concept were <strong>split</strong>: some wanted the broadcast alone, others lit up at the idea of following their favourite player for an entire match.</li>
+        <li>Nobody asked for a wall of streams. The excitement was about <strong>one extra perspective</strong>, not four.</li>
+      </ul>
+      <div class="stat-band reveal">
+        <div class="stat"><div class="num">8</div><div class="lbl">Participants</div></div>
+        <div class="stat"><div class="num">1</div><div class="lbl">Week of Research</div></div>
+        <div class="stat"><div class="num">2</div><div class="lbl">Streams, Max</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ INSIGHTS ============ -->
+  <section id="insights">
+    <div class="wrap">
+      <span class="kicker reveal">03 — Insights</span>
+      <h2 class="reveal">Fans wanted a sidekick, not a control room</h2>
+      <p class="reveal lede">The research flipped the premise. Multiview was highly desired — but not the maximalist version anyone imagined.</p>
+      <ol class="insight-list">
+        <li class="reveal"><strong>Two streams is the sweet spot.</strong> Maybe three in edge cases. Four is simply too much — the action is hard enough to follow on one screen.</li>
+        <li class="reveal"><strong>The broadcast stays the anchor.</strong> Fans want it as their main video and audio source, with a favourite player's POV running alongside as a side piece.</li>
+        <li class="reveal"><strong>Broadcast audio wins by default</strong> — unless the fan deliberately swaps it for a player POV's audio. Their choice, never ours.</li>
+        <li class="reveal"><strong>Keep it simple or lose them.</strong> Four simultaneous streams isn't a feature, it's cognitive overload.</li>
+        <li class="reveal"><strong>Face cams flopped.</strong> Fans weren't interested in a player's face cam as its own stream — embed it inside the POV if at all.</li>
+      </ol>
+      <div class="quote reveal">
+        <p>"Yes, the broadcast is enough. The extra POV is the treat — not the meal."</p>
+        <span>— The finding that scoped the whole feature</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EXPLORATION ============ -->
+  <section id="exploration">
+    <div class="wrap">
+      <span class="kicker reveal">04 — Exploration</span>
+      <h2 class="reveal">Choose the form, then fill it</h2>
+      <p class="reveal lede">Rapid low-fidelity exploration in Figma, with one non-negotiable: the fan must never lose sight of the match.</p>
+      <p class="reveal">We played with side trays and bottom trays, and tested two mental models for building a Multiview. The <strong>additive approach</strong> — add streams one by one and let the layout reshape itself — felt flexible but unpredictable. The <strong>form-first approach</strong> — pick "I want 3 streams", watch the empty slots appear, then fill them — won decisively:</p>
+      <ul class="clean reveal">
+        <li><strong>Every step is visible.</strong> Watching a new empty stream slot appear and then fill with your selection makes the process self-explanatory.</li>
+        <li><strong>The match never disappears.</strong> The stream stays viewable behind every menu, providing instant feedback for every choice.</li>
+      </ul>
+      <div class="img-grid">
+        <figure class="reveal span-2">
+          <img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/65bc20e9f7115b0002f7403c/eH7C9ORfJi3eah25.png" alt="Low fidelity Multiview concepts" loading="lazy">
+          <figcaption>Low-fi concepts — preserving the watch experience at every step.</figcaption>
+        </figure>
+        <figure class="reveal">
+          <img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/65bc20e9f7115b0002f7403c/8tZaoFnQQ0wZBMCf.png" alt="Bottom tray exploration" loading="lazy">
+          <figcaption>Bottom tray exploration.</figcaption>
+        </figure>
+        <figure class="reveal">
+          <img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/65bc20e9f7115b0002f7403c/AyfsJzQqBEl31zyl.png" alt="Mobile exploration" loading="lazy">
+          <figcaption>Mobile exploration.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROTOTYPE ============ -->
+  <section id="prototype">
+    <div class="wrap">
+      <span class="kicker reveal">05 — Prototype</span>
+      <h2 class="reveal">Pinning and adding streams, in motion</h2>
+      <p class="reveal lede">A working prototype brought the form-first model to life — exploring how fans pin the streams they care about and add new ones without ever losing the match.</p>
+      <div class="video-embed reveal">
+        <iframe src="https://www.youtube.com/embed/eX60fi4-f5Q" title="Multiview prototype — pinning and adding streams" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINAL DESIGN ============ -->
+  <section id="final">
+    <div class="wrap">
+      <span class="kicker reveal">06 — Final Design</span>
+      <h2 class="reveal">The final Multiview anatomy</h2>
+      <p class="reveal lede">The prototype gave the client the confidence to move forward — with one strategic note that reshaped the menu.</p>
+      <p class="reveal">The watch experience would eventually carry <strong>two side panels</strong> — Chat on one side, the Stats panel on the other. A third side panel for Multiview would have crowded the player beyond saving. So the Multiview menu became a <strong>fullscreen modal within the player</strong>, while the mouse-over playback experience stayed exactly as prototyped.</p>
+      <div class="anatomy reveal">
+        <h4>Options overlay (mouse over)</h4>
+        <div class="crop crop-overlay" role="img" aria-label="Multiview options overlay with numbered annotations"></div>
+        <div class="legend-grid">
+          <div class="li"><span class="dot">1</span><p style="margin:0"><b>Stream Selector</b> — opens the Stream Selector panel.</p></div>
+          <div class="li"><span class="dot">2</span><p style="margin:0"><b>Stream windows</b> — a maximum of 3 concurrent streams.</p></div>
+          <div class="li"><span class="dot">3</span><p style="margin:0"><b>Spotlight</b> — moves the stream to the left side and enlarges it.</p></div>
+          <div class="li"><span class="dot">4</span><p style="margin:0"><b>Remove stream</b> — closes that stream window.</p></div>
+          <div class="li"><span class="dot">5</span><p style="margin:0"><b>Broadcast / athlete name</b> — identifies the stream source. Single line, truncated with '…'.</p></div>
+          <div class="li"><span class="dot">6</span><p style="margin:0"><b>Audio source</b> — marks which window owns the audio. Fully visible with controls; shown faded on hover over unselected streams.</p></div>
+          <div class="li"><span class="dot">7</span><p style="margin:0"><b>Mouseover highlight</b> — feedback marking the press target, especially for switching audio.</p></div>
+          <div class="li"><span class="dot">8</span><p style="margin:0"><b>Player controls</b> — one set for all streams, since every stream is the same event.</p></div>
+        </div>
+      </div>
+
+      <div class="anatomy reveal">
+        <h4>Stream selector panel</h4>
+        <div class="crop crop-selector" role="img" aria-label="Stream selector panel with numbered annotations"></div>
+        <div class="legend-grid">
+          <div class="li"><span class="dot">1</span><p style="margin:0"><b>Stream 1 tab (non-focused)</b> — configures stream 1; the close icon removes it.</p></div>
+          <div class="li"><span class="dot">2</span><p style="margin:0"><b>Stream 2 tab (focused)</b> — configures stream 2; the close icon removes it.</p></div>
+          <div class="li"><span class="dot">3</span><p style="margin:0"><b>Add stream</b> — adds a stream up to the maximum of 3, then disappears until one is removed.</p></div>
+          <div class="li"><span class="dot">4</span><p style="margin:0"><b>Exit</b> — closes the selector, back to playback controls.</p></div>
+          <div class="li"><span class="dot">5</span><p style="margin:0"><b>Video streams</b> — broadcast and athlete options; broadcasts max out at two rows of five.</p></div>
+          <div class="li"><span class="dot">6</span><p style="margin:0"><b>Non-selected tab's stream</b> — shown disabled until its tab is selected.</p></div>
+          <div class="li"><span class="dot">7</span><p style="margin:0"><b>Selected tab's stream</b> — shown active; disables when another tab takes focus.</p></div>
+        </div>
+        <p style="margin:18px 0 0;font-size:14px"><em>Client direction: the selector runs as a fullscreen menu within the player — the watch experience already carries Chat and Stats side panels.</em></p>
+      </div>
+
+      <h3 class="reveal">Changing audio — the fan stays in charge</h3>
+      <p class="reveal">Research said broadcast audio wins by default, but the swap to a player POV had to be effortless and reversible. The flow, in five steps:</p>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="txt"><p>The fan wants to switch from broadcast audio to a player POV's audio.</p></div>
+          <figure><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/65bc20e9f7115b0002f7403c/wnVkHRG1pycKvfSR.png" alt="Audio step 1" loading="lazy"></figure>
+        </div>
+        <div class="step reveal">
+          <div class="txt"><p>They tap the screen for playback controls — the audio icon shows active on Stream 1 (broadcast).</p></div>
+          <figure><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/65bc20e9f7115b0002f7403c/lT86Jj5BccpUv7N0.png" alt="Audio step 2" loading="lazy"></figure>
+        </div>
+        <div class="step reveal">
+          <div class="txt"><p>Hovering over Stream 2 highlights it with a white stroke — its audio icon sits inactive.</p></div>
+          <figure><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/65bc20e9f7115b0002f7403c/v85fbvnHQR6dfMgL.png" alt="Audio step 3" loading="lazy"></figure>
+        </div>
+        <div class="step reveal">
+          <div class="txt"><p>Clicking the highlighted stream activates its audio — the faded icon turns bold white.</p></div>
+          <figure><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/65bc20e9f7115b0002f7403c/hanh9xnSOzjBFEeE.png" alt="Audio step 4" loading="lazy"></figure>
+        </div>
+        <div class="step reveal">
+          <div class="txt"><p>Audio now plays from the player POV on Stream 2. One click back restores the broadcast.</p></div>
+          <figure><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/65bc20e9f7115b0002f7403c/xJ64zwXWK5UQV8LB.png" alt="Audio step 5" loading="lazy"></figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ REFLECTIONS ============ -->
+  <section id="reflections">
+    <div class="wrap">
+      <span class="kicker reveal">07 — Reflections</span>
+      <h2 class="reveal">The brief grew. The design stayed simple.</h2>
+      <p class="reveal lede">What started as "a mechanism for adding streams" became a full system for adding, removing, and prioritising both video and audio.</p>
+      <p class="reveal">There was far more to unpack than the initial brief suggested — every answer (how many streams?) opened a new question (then whose audio? whose video leads?). The discipline was holding onto what the research kept saying: <strong>the broadcast is the anchor, the extra POV is the treat, and control means nothing if the fan loses the match</strong>. We shipped the final solution as a team confident it was best in class.</p>
+      <div class="callout reveal">
+        <p><strong>The takeaway:</strong> when a feature's whole promise is "more", the designer's job is to find the point where more stops helping — and build the experience around that line, not past it.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <p style="margin:0">Multiview — a case study by <a href="https://www.joemlee.com">Joseph Lee</a></p>
+    </div>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   SMOOTH EASED SCROLLING — custom requestAnimationFrame tween
+   with ease-in-out so nav clicks glide instead of snapping.
+   ============================================================ */
+(function(){
+  const DURATION = 900; // ms — tweak scroll speed here
+  let rafId = null;
+
+  function easeInOutCubic(t){
+    return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2;
+  }
+
+  function animateScrollTo(targetY){
+    if (rafId) cancelAnimationFrame(rafId);
+    const startY = window.scrollY;
+    const maxY = document.documentElement.scrollHeight - window.innerHeight;
+    const destY = Math.max(0, Math.min(targetY, maxY));
+    const delta = destY - startY;
+    if (Math.abs(delta) < 1) return;
+    const start = performance.now();
+
+    function step(now){
+      const t = Math.min((now - start) / DURATION, 1);
+      window.scrollTo(0, startY + delta * easeInOutCubic(t));
+      if (t < 1) rafId = requestAnimationFrame(step);
+      else rafId = null;
+    }
+    rafId = requestAnimationFrame(step);
+  }
+
+  // Cancel the tween if the user takes over (wheel / touch / keys)
+  ['wheel','touchstart','keydown'].forEach(evt =>
+    window.addEventListener(evt, () => { if (rafId){ cancelAnimationFrame(rafId); rafId = null; } }, {passive:true})
+  );
+
+  const navLinks = Array.from(document.querySelectorAll('.sidenav a'));
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      if (link.hasAttribute('data-top')) { animateScrollTo(0); return; }
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target){
+        const y = target.getBoundingClientRect().top + window.scrollY - 24;
+        animateScrollTo(y);
+      }
+    });
+  });
+
+  /* ---------- Scrollspy: highlight the section in view ---------- */
+  const sections = Array.from(document.querySelectorAll('section[id]'));
+  function updateActive(){
+    const probe = window.scrollY + window.innerHeight * 0.35;
+    let current = sections[0];
+    for (const s of sections){
+      if (s.offsetTop <= probe) current = s;
+    }
+    navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current.id));
+  }
+  window.addEventListener('scroll', updateActive, {passive:true});
+  updateActive();
+
+  /* ---------- Scroll-reveal animations ---------- */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting){
+        en.target.classList.add('visible');
+        io.unobserve(en.target);
+      }
+    });
+  }, {threshold: 0.12, rootMargin: '0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+})();
+</script>
+</body>
+</html>

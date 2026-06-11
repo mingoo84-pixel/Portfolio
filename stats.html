@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Esports Stats Panel — Joseph Lee</title>
+<meta name="description" content="Designing the stats experience esports fans actually wanted — a case study for Riot's REN watch experience across League of Legends and Valorant.">
+<style>
+/* ============================================================
+   WHITE-LABEL THEME — edit these variables to rebrand the
+   entire case study. Everything below inherits from here.
+   ============================================================ */
+:root{
+  --bg:           #0e0f13;   /* page background */
+  --surface:      #16181f;   /* cards & panels */
+  --surface-2:    #1d2029;   /* raised surface */
+  --line:         #2a2e3a;   /* hairlines */
+  --text:         #e8eaf0;   /* body text */
+  --text-dim:     #9aa0b0;   /* secondary text */
+  --accent:       #ff4655;   /* primary brand colour (Valorant red) */
+  --accent-2:     #4fd1c5;   /* secondary accent (teal) */
+  --nav-w:        232px;     /* sidebar width */
+  --max-w:        820px;     /* article column width */
+  --radius:       14px;
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto} /* JS handles smooth scrolling with easing */
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  font-size:17px;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- Side navigation ---------- */
+.sidenav{
+  position:fixed;
+  top:50%;
+  left:24px;
+  transform:translateY(-50%);
+  width:var(--nav-w);
+  background:rgba(22,24,31,.85);
+  backdrop-filter:blur(12px);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:14px 10px;
+  z-index:100;
+  max-height:88vh;
+  overflow-y:auto;
+}
+.sidenav a{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:9px 12px;
+  border-radius:9px;
+  color:var(--text-dim);
+  text-decoration:none;
+  font-size:13.5px;
+  font-weight:500;
+  letter-spacing:.01em;
+  transition:color .3s ease, background .3s ease;
+  position:relative;
+}
+.sidenav a svg{width:17px;height:17px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s ease}
+.sidenav a:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.sidenav a.active{color:var(--text);background:rgba(255,70,85,.10)}
+.sidenav a.active svg{stroke:var(--accent)}
+.sidenav a.active::before{
+  content:"";
+  position:absolute;left:0;top:50%;
+  transform:translateY(-50%);
+  width:3px;height:55%;
+  border-radius:3px;
+  background:var(--accent);
+}
+.sidenav .divider{height:1px;background:var(--line);margin:8px 12px}
+
+/* ---------- Layout ---------- */
+.page{
+  margin-left:calc(var(--nav-w) + 64px);
+  margin-right:32px;
+}
+.wrap{max-width:var(--max-w);margin:0 auto;padding:0 20px}
+section{padding:96px 0 32px;scroll-margin-top:0}
+
+/* ---------- Typography ---------- */
+.kicker{
+  display:inline-block;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:14px;
+}
+h1{font-size:clamp(36px,5vw,56px);line-height:1.12;font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(26px,3.4vw,36px);line-height:1.2;font-weight:750;letter-spacing:-.015em;margin-bottom:20px}
+h3{font-size:20px;font-weight:700;margin:36px 0 12px}
+p{color:var(--text-dim);margin-bottom:18px;max-width:68ch}
+p strong, li strong{color:var(--text)}
+.lede{font-size:20px;line-height:1.65;color:var(--text)}
+ul.clean{list-style:none;margin-bottom:18px}
+ul.clean li{
+  position:relative;
+  padding-left:26px;
+  margin-bottom:10px;
+  color:var(--text-dim);
+}
+ul.clean li::before{
+  content:"";
+  position:absolute;left:4px;top:11px;
+  width:7px;height:7px;border-radius:2px;
+  background:var(--accent);
+  transform:rotate(45deg);
+}
+
+/* ---------- Hero ---------- */
+.hero{padding:110px 0 24px}
+.hero p.sub{font-size:21px;color:var(--text-dim);margin-top:20px;max-width:60ch}
+.meta-row{
+  display:flex;flex-wrap:wrap;gap:28px;
+  margin-top:34px;padding-top:26px;
+  border-top:1px solid var(--line);
+}
+.meta-row div span{display:block;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px}
+.meta-row div b{font-size:15px;font-weight:600;color:var(--text)}
+
+/* ---------- Imagery ---------- */
+figure{margin:34px 0}
+figure img{
+  width:100%;height:auto;display:block;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  background:var(--surface);
+}
+figcaption{font-size:13.5px;color:var(--text-dim);margin-top:10px;text-align:center}
+figure.compact img{width:auto;max-width:calc(50% - 9px);margin:0 auto}
+
+/* ---------- Wireframe spec cards (native rebuild of annotated wireframes) ---------- */
+.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:34px 0;align-items:start}
+.spec-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px 26px}
+.spec-card h4{font-size:17px;font-weight:700;color:var(--text);margin-bottom:12px}
+.spec-card ul.clean li{font-size:14.5px;margin-bottom:8px}
+.wf-row{display:flex;gap:12px;margin-top:20px}
+.wf-panel{flex:1;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px}
+.wf-box{border-radius:6px;padding:8px 6px;font-size:12px;font-weight:700;color:#1a1d26;text-align:center;margin-bottom:8px;line-height:1.35}
+.wf-box small{display:block;font-size:10px;font-weight:600;opacity:.75}
+.wf-pink{background:#f9a8d4}
+.wf-yellow{background:#fde68a}
+.wf-split{display:flex;border-radius:6px;overflow:hidden;font-size:12px;font-weight:700;color:#fff;text-align:center}
+.wf-split span{flex:1;padding:8px 4px}
+.wf-green{background:#10b981}
+.wf-red{background:#ef4444}
+.wf-cap{font-size:11.5px;color:var(--text-dim);margin-top:8px;text-align:center}
+.spec-card.wide{display:grid;grid-template-columns:1.15fr 1fr;gap:28px;align-items:center;margin:34px 0}
+.spec-card.wide h4{margin-top:0}
+.wf-fill{display:flex;align-items:center;justify-content:center;margin-bottom:0}
+.wf-h-sm{min-height:46px}
+.wf-h-md{min-height:96px}
+.wf-h-lg{min-height:190px}
+.wf-h-xl{min-height:240px}
+@media (max-width:1080px){.spec-grid{grid-template-columns:1fr}.spec-card.wide{grid-template-columns:1fr}}
+.img-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:34px 0}
+.img-grid figure{margin:0}
+.img-grid .span-2{grid-column:span 2}
+
+/* ---------- Callouts, stats & cards ---------- */
+.callout{
+  background:linear-gradient(135deg, rgba(255,70,85,.08), rgba(79,209,197,.06));
+  border:1px solid var(--line);
+  border-left:3px solid var(--accent);
+  border-radius:var(--radius);
+  padding:26px 30px;
+  margin:34px 0;
+}
+.callout p{margin:0;color:var(--text);font-size:18.5px;line-height:1.6}
+
+.stat-band{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:18px;
+  margin:38px 0;
+}
+.stat-band .stat{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:26px 22px;text-align:center;
+}
+.stat-band .num{
+  font-size:44px;font-weight:800;letter-spacing:-.02em;
+  background:linear-gradient(120deg,var(--accent),var(--accent-2));
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  line-height:1.1;
+}
+.stat-band .lbl{font-size:13px;color:var(--text-dim);margin-top:6px;letter-spacing:.04em;text-transform:uppercase;font-weight:600}
+
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:34px 0}
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:24px 26px;
+}
+.card .n{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:30px;border-radius:8px;
+  background:rgba(255,70,85,.12);color:var(--accent);
+  font-weight:800;font-size:14px;margin-bottom:12px;
+}
+.card p{margin:0;font-size:15.5px}
+.card b{display:block;color:var(--text);font-size:16px;margin-bottom:6px}
+
+.insight-list{counter-reset:ins;list-style:none;margin:30px 0}
+.insight-list li{
+  counter-increment:ins;
+  position:relative;
+  padding:18px 22px 18px 64px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:12px;
+  margin-bottom:12px;
+  color:var(--text);
+  font-size:16.5px;
+}
+.insight-list li::before{
+  content:"0" counter(ins);
+  position:absolute;left:20px;top:50%;transform:translateY(-50%);
+  font-weight:800;font-size:15px;color:var(--accent);
+  letter-spacing:.04em;
+}
+
+.quote{
+  margin:44px 0;padding:8px 0 8px 28px;
+  border-left:3px solid var(--accent-2);
+}
+.quote p{font-size:23px;line-height:1.5;color:var(--text);font-weight:600;margin:0;letter-spacing:-.01em}
+.quote span{display:block;margin-top:10px;font-size:14px;color:var(--text-dim)}
+
+.tag{
+  display:inline-block;font-size:12px;font-weight:700;
+  padding:4px 12px;border-radius:99px;
+  background:rgba(79,209,197,.12);color:var(--accent-2);
+  letter-spacing:.06em;text-transform:uppercase;
+  margin-bottom:14px;
+}
+
+/* ---------- Footer ---------- */
+footer{
+  border-top:1px solid var(--line);
+  margin-top:80px;padding:48px 0 72px;
+  text-align:center;color:var(--text-dim);font-size:14px;
+}
+footer a{color:var(--accent-2);text-decoration:none}
+
+/* ---------- Scroll reveal ---------- */
+.reveal{
+  opacity:0;
+  transform:translateY(28px);
+  transition:opacity .8s cubic-bezier(.22,.61,.36,1), transform .8s cubic-bezier(.22,.61,.36,1);
+}
+.reveal.visible{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1080px){
+  .sidenav{
+    top:auto;bottom:16px;left:50%;
+    transform:translateX(-50%);
+    width:auto;max-width:calc(100vw - 24px);
+    display:flex;gap:2px;
+    padding:8px;
+    overflow-x:auto;max-height:none;
+  }
+  .sidenav a{flex:none;padding:8px 10px}
+  .sidenav a span{display:none}
+  .sidenav a.active::before{display:none}
+  .sidenav .divider{display:none}
+  .page{margin-left:0;margin-right:0}
+  .stat-band{grid-template-columns:repeat(3,1fr);gap:10px}
+  .card-grid,.img-grid{grid-template-columns:1fr}
+  .img-grid .span-2{grid-column:span 1}
+  body{padding-bottom:80px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ SIDE NAVIGATION (white-label: edit labels/icons) ============ -->
+<nav class="sidenav" id="sidenav" aria-label="Case study sections">
+  <a href="#overview" class="active">
+    <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10"/></svg>
+    <span>Overview</span>
+  </a>
+  <a href="#stakes">
+    <svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
+    <span>The Stakes</span>
+  </a>
+  <a href="#research">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+    <span>Research</span>
+  </a>
+  <a href="#insights">
+    <svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.8.7 1 1.5 1 2.5h6c0-1 .2-1.8 1-2.5A6 6 0 0012 3z"/></svg>
+    <span>Insights</span>
+  </a>
+  <a href="#breakthrough">
+    <svg viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 11-13h-7l0-7z"/></svg>
+    <span>The Breakthrough</span>
+  </a>
+  <a href="#wireframes">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+    <span>Wireframes</span>
+  </a>
+  <a href="#final">
+    <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 22h8M12 18v4"/></svg>
+    <span>Final Designs</span>
+  </a>
+  <a href="#reflections">
+    <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-9 8.35 8.5 8.5 0 01-3.4-.7L3 21l1.85-5.6A8.38 8.38 0 1121 11.5z"/></svg>
+    <span>Reflections</span>
+  </a>
+  <div class="divider"></div>
+  <a href="#top" data-top>
+    <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+    <span>Back to top</span>
+  </a>
+</nav>
+
+<div class="page" id="top">
+
+  <!-- ============ HERO / OVERVIEW ============ -->
+  <section class="hero" id="overview">
+    <div class="wrap">
+      <span class="kicker reveal">Case Study · Riot Games REN Watch Experience</span>
+      <h1 class="reveal">The stats panel esports fans didn't know they needed</h1>
+      <p class="sub reveal">Riot killed its stats product after poor adoption. The appetite for stats never died — the product did. This is how research reshaped a failed feature into a second commentator for League of Legends and Valorant broadcasts.</p>
+      <div class="meta-row reveal">
+        <div><span>Role</span><b>Consultant — Strategy &amp; Design</b></div>
+        <div><span>Client</span><b>Riot Games (REN team)</b></div>
+        <div><span>Titles</span><b>League of Legends · Valorant</b></div>
+        <div><span>Focus</span><b>Research, IA, UI Design</b></div>
+      </div>
+      <figure class="reveal">
+        <img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/645b74054cf946000228c84f/cjRBSyFwy39Hirjs.jpg" alt="Esports Stats Panel hero image" loading="eager">
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ THE STAKES ============ -->
+  <section id="stakes">
+    <div class="wrap">
+      <span class="kicker reveal">01 — The Stakes</span>
+      <h2 class="reveal">A product was just buried. We had to design its successor.</h2>
+      <p class="reveal lede">February 2022: Riot announces Pro View — its paid esports stats service — is being discontinued. Poor adoption. Fans wouldn't pay to dig through screens of numbers while the action was happening without them.</p>
+      <p class="reveal">But here's the tension that made this project interesting: esports fans <strong>love</strong> stats. They argue about them on Reddit, memorise them, build identities around them. The failure of Pro View wasn't proof that fans don't want stats — it was proof that nobody had worked out <strong>when, where and how</strong> fans actually consume them.</p>
+      <div class="callout reveal">
+        <p><strong>The brief:</strong> design a new stats panel for Riot's REN watch experience — across both League of Legends and Valorant — that earns its place on the screen instead of competing with the match for attention.</p>
+      </div>
+      <h3 class="reveal">What we set out to answer</h3>
+      <ul class="clean reveal">
+        <li><strong>Which stats genuinely matter</strong> to fans watching professional esports — not which stats exist.</li>
+        <li><strong>How a stats panel should live</strong> alongside the broadcast without stealing focus from the game.</li>
+      </ul>
+      <p class="reveal">The brief was deliberately ambiguous, so we worked side-by-side with Riot's REN team to shape the scope rather than waiting for it — turning the ambiguity into a strategic advantage: we got to define what "success" looked like before designing for it.</p>
+    </div>
+  </section>
+
+  <!-- ============ RESEARCH ============ -->
+  <section id="research">
+    <div class="wrap">
+      <span class="kicker reveal">02 — Research</span>
+      <h2 class="reveal">Watching fans watch the game</h2>
+      <p class="reveal lede">PC gamers who also watch pro esports are a notoriously hard group to recruit. We found seven dedicated League of Legends fans — and squeezed every drop of insight out of them with a five-step protocol.</p>
+
+      <div class="card-grid reveal">
+        <div class="card"><span class="n">1</span><p><b>General inquiry</b>Gaming and esports habits — who they watch, where, and why.</p></div>
+        <div class="card"><span class="n">2</span><p><b>Contextual inquiry</b>We showed early, mid and late-game clips and asked: what do you need to understand this moment?</p></div>
+        <div class="card"><span class="n">3</span><p><b>Card sorting</b>Fans ranked basic and advanced stats from most to least important — separately for early and late game.</p></div>
+        <div class="card"><span class="n">4</span><p><b>A/B concept tests</b>Raw numbers vs bold visual graphs over time — which do fans actually read?</p></div>
+        <div class="card"><span class="n">5</span><p><b>Hypothesis survey</b>Key hypotheses ranked 1–5, disagree to agree, to pressure-test what we thought we heard.</p></div>
+        <div class="card"><span class="n">★</span><p><b>Honest data only</b>We omitted no-shows and participants who misrepresented their experience — a smaller but truthful sample.</p></div>
+      </div>
+
+      <figure class="reveal">
+        <img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/645b74054cf946000228c84f/YEsKIAcuLR32QiLt.png" alt="Card sorting exercise with esports stats" loading="lazy">
+        <figcaption>The card sorting exercise — fans ranking stats by importance for early vs late game.</figcaption>
+      </figure>
+
+      <div class="stat-band reveal">
+        <div class="stat"><div class="num">7</div><div class="lbl">Interviews</div></div>
+        <div class="stat"><div class="num">7</div><div class="lbl">A/B Tests</div></div>
+        <div class="stat"><div class="num">3</div><div class="lbl">Iterations</div></div>
+      </div>
+      <p class="reveal">Everything was synthesised into a research presentation that travelled up the organisation — the findings below became the spine of every design decision that followed.</p>
+    </div>
+  </section>
+
+  <!-- ============ INSIGHTS ============ -->
+  <section id="insights">
+    <div class="wrap">
+      <span class="kicker reveal">03 — Insights</span>
+      <h2 class="reveal">Stats aren't data. They're commentary.</h2>
+      <p class="reveal lede">Seven findings emerged — but they all orbit a single idea: a stat is only valuable in the moment it explains.</p>
+
+      <ol class="insight-list">
+        <li class="reveal">The importance of a stat <strong>changes over time</strong> — what matters at minute 2 is noise at minute 30.</li>
+        <li class="reveal">Stats must serve <strong>both education and entertainment</strong> — new fans and veterans watch the same broadcast.</li>
+        <li class="reveal">Stats need to <strong>tell a narrative</strong> that enhances the viewing experience, not interrupt it.</li>
+        <li class="reveal">Too many irrelevant stats create <strong>information overload</strong> — fans switch off entirely.</li>
+        <li class="reveal"><strong>When</strong> to show a stat is as important as <strong>which</strong> stat to show.</li>
+        <li class="reveal">Bold <strong>visualisations beat raw numbers</strong> — fans consume graphs at a glance, numbers take effort.</li>
+        <li class="reveal">Fans were too engrossed in the action to ever dig through <strong>a stats screen three levels deep</strong>.</li>
+      </ol>
+
+      <div class="quote reveal">
+        <p>"Stats should be like a nerdy commentator on the broadcast team."</p>
+        <span>— The insight that reframed the entire project</span>
+      </div>
+      <p class="reveal">That one line became our design north star. A good commentator doesn't talk over the play — they wait for the lull, then tell you the thing that makes the last fight make sense. Our stats panel had to behave the same way.</p>
+    </div>
+  </section>
+
+  <!-- ============ THE BREAKTHROUGH ============ -->
+  <section id="breakthrough">
+    <div class="wrap">
+      <span class="kicker reveal">04 — The Breakthrough</span>
+      <h2 class="reveal">Don't make fans dig. Surface the story.</h2>
+      <p class="reveal lede">If fans won't leave the action to find stats, the stats have to come to them — at exactly the right moment.</p>
+      <p class="reveal">The lightbulb moment: every match has natural lulls — buy phases, resets, the breath between fights — where the broadcast and the fan briefly relax. Those lulls are the commentator's window, and they became ours. We flattened the three-level stats screen into two always-visible surfaces:</p>
+      <div class="card-grid reveal">
+        <div class="card"><span class="n">A</span><p><b>The Stats Module</b>Four stat categories that stay relevant at every stage of a match — no digging, no navigation.</p></div>
+        <div class="card"><span class="n">B</span><p><b>The Match Feed</b>Event-triggered stat cards that explain the action that just happened, delivered during the lull that follows it.</p></div>
+      </div>
+
+      <h3 class="reveal">The four always-relevant categories (Valorant)</h3>
+      <ul class="clean reveal">
+        <li><strong>Accuracy</strong> — shot percentage</li>
+        <li><strong>Damage per round</strong></li>
+        <li><strong>Entry success %</strong> — who wins the opening duel</li>
+        <li><strong>Team economy</strong> — who holds the financial advantage right now</li>
+      </ul>
+
+      <figure class="reveal compact">
+        <img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/645b74054cf946000228c84f/UKpbQ2Hob6VbO0Vq.png" alt="Early concept of stat modules and match feed" loading="lazy">
+        <figcaption>Early concept — the flattened stats module with the event-driven match feed beneath it.</figcaption>
+      </figure>
+
+      <div class="callout reveal">
+        <p>One structural idea — <strong>module + feed</strong> — resolved all seven research insights at once: right stat, right moment, zero digging.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WIREFRAMES ============ -->
+  <section id="wireframes">
+    <div class="wrap">
+      <span class="kicker reveal">05 — Wireframes</span>
+      <h2 class="reveal">Sketching the second commentator</h2>
+      <p class="reveal lede">Low-fidelity wireframes pressure-tested the concept: could a fan absorb the story of the round in a single glance?</p>
+      <ul class="clean reveal">
+        <li>Stat rankings for <strong>accuracy, average damage and entry success</strong> at a glance.</li>
+        <li><strong>Economic advantage</strong> each round — who spent the most, who's saving.</li>
+        <li><strong>Clutch moments</strong> — who won the last round, with their accuracy and damage.</li>
+        <li><strong>Kill attribution</strong> — who killed whom, because multi-kills get chaotic fast.</li>
+      </ul>
+      <p class="reveal">Three rules kept the chaos in check: the stats module and match feed are <strong>visually distinct areas</strong>; team colours follow the <strong>defend/attack sides</strong> (green vs red) and swap at the half; and feed modules appear in a <strong>strict, predictable order</strong> so the panel never surprises the fan.</p>
+      <div class="spec-card wide reveal">
+        <div>
+          <h4>Valorant Stats panel layout</h4>
+          <ul class="clean">
+            <li><strong>Toggleable in the REN watch experience</strong> on desktop — accompanying any LoL or Valorant broadcast.</li>
+            <li><strong>Stats module</strong> — collapses and expands, always present, untouched by the feed's scroll. Metrics update live as the game progresses.</li>
+            <li><strong>Match Feed</strong> — a scrollable stack of time-based modules, newest at the top, pushing older ones down.</li>
+            <li>Some modules <strong>link out to highlighted plays</strong>; others are view-only.</li>
+          </ul>
+        </div>
+        <div class="wf-row">
+          <div class="wf-panel">
+            <div class="wf-box wf-pink wf-h-sm wf-fill" style="margin-bottom:8px">Collapsed<br>Stats module</div>
+            <div class="wf-box wf-yellow wf-h-xl wf-fill">Match Feed</div>
+            <div class="wf-cap">Collapsed</div>
+          </div>
+          <div class="wf-panel">
+            <div class="wf-box wf-pink wf-h-md wf-fill" style="margin-bottom:8px">Expanded<br>Stats module</div>
+            <div class="wf-box wf-yellow wf-h-lg wf-fill">Match Feed</div>
+            <div class="wf-cap">Expanded</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="spec-grid">
+        <div class="spec-card reveal">
+          <h4>Halftime colour switch</h4>
+          <ul class="clean">
+            <li><strong>Red = attacking, green = defending</strong> — colour tells you the side at a glance.</li>
+            <li><strong>Team 1 anchors left, Team 2 right</strong> — positions never move for the whole series.</li>
+            <li>At halftime (after round 12) the sides switch — <strong>so the colours swap with them</strong>.</li>
+            <li>The stats module and every feed module anchor to the same colours; <strong>agent portraits face inward</strong> toward each other.</li>
+          </ul>
+          <div class="wf-row">
+            <div class="wf-panel">
+              <div class="wf-box wf-pink">Collapsed Stats module</div>
+              <div class="wf-split"><span class="wf-green">Team 1</span><span class="wf-red">Team 2</span></div>
+              <div class="wf-cap">First half</div>
+            </div>
+            <div class="wf-panel">
+              <div class="wf-box wf-pink">Collapsed Stats module</div>
+              <div class="wf-split"><span class="wf-red">Team 1</span><span class="wf-green">Team 2</span></div>
+              <div class="wf-cap">After halftime</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spec-card reveal">
+          <h4>Module order</h4>
+          <ul class="clean">
+            <li><strong>Newest modules surface at the top</strong>; older ones push down into the scroll.</li>
+            <li>Each round opens with a <strong>Round banner</strong>, then the <strong>Round Economy</strong> module.</li>
+            <li>Every kill triggers a <strong>kill/breakdown</strong> as the round plays out.</li>
+            <li>Round over: <strong>win banner first, then Round MVP</strong>.</li>
+            <li>At halftime, a <strong>'Switching sides' banner</strong> follows the MVPs.</li>
+          </ul>
+          <div class="wf-row">
+            <div class="wf-panel">
+              <div class="wf-box wf-pink">Collapsed Stats module</div>
+              <div class="wf-box wf-yellow"><small>Halftime — switch sides</small>Round 13 banner</div>
+              <div class="wf-box wf-yellow">Round 12 win banner<small>Round MVP · Stats</small></div>
+              <div class="wf-box wf-yellow">Kill/breakdown</div>
+              <div class="wf-cap">Example: round 12 → 13</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINAL DESIGNS ============ -->
+  <section id="final">
+    <div class="wrap">
+      <span class="kicker reveal">06 — Final Designs</span>
+      <h2 class="reveal">The panel that earns its pixels</h2>
+      <p class="reveal lede">The final stats panel sits on the left of the player in the REN watch experience — toggled on or off by the fan, always scrollable, with the freshest events surfacing at the top.</p>
+
+      <figure class="reveal">
+        <img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/645b74054cf946000228c84f/qolIS4vHCMax7bnw.png" alt="REN watch experience with stats panel on the left of the player" loading="lazy">
+        <figcaption>The REN watch experience — stats panel docked left of the player, toggleable on/off.</figcaption>
+      </figure>
+      <figure class="reveal compact">
+        <img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/645b74054cf946000228c84f/RpsnJofLqLD9tdc5.jpeg" alt="Final design of the Valorant stats panel" loading="lazy">
+        <figcaption>Final delivery of the Valorant stats panel — newest events always update from the top.</figcaption>
+      </figure>
+
+      <h3 class="reveal">Stats module — collapsed &amp; expanded</h3>
+      <p class="reveal">Collapsed, the module spotlights the <strong>top three performers</strong> per category — the headline. Expanded, it becomes <strong>team vs team</strong> with the best performers in the middle — the full story for fans who want more. Two depths, zero navigation.</p>
+      <div class="img-grid">
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/645b74054cf946000228c84f/smXfLK5ifR4iMugP.jpg" alt="Stats module UI" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/645b74054cf946000228c84f/RnOd09heiP951hDZ.jpg" alt="Stats module collapsed state" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/645b74054cf946000228c84f/4z7zUInYJnaH3ugE.jpg" alt="Stats module expanded state" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/645b74054cf946000228c84f/3ts13ti6JTY1I8DV.jpg" alt="Stats panel UI detail" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/645b74054cf946000228c84f/CHAvRV2Iam60fOxN.jpg" alt="Stats panel UI detail" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/645b74054cf946000228c84f/59K5LZif3V997qNc.jpg" alt="Stats panel UI detail" loading="lazy"></figure>
+      </div>
+
+      <h3 class="reveal">The match feed — stats with timing</h3>
+      <p class="reveal">Feed modules fire on in-game events, exactly like a commentator picking their moment: <strong>economy modules</strong> open each round, <strong>Round MVP</strong> lands when a round concludes, and a <strong>kill feed module</strong> appears with every kill — keeping pace with the chaos without adding to it.</p>
+      <div class="img-grid">
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/645b74054cf946000228c84f/266QOYhsMNqJJKA0.png" alt="Stats feed modules" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/645b74054cf946000228c84f/dEWQ8rTKX1B7wuLo.png" alt="Economy feed module" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/645b74054cf946000228c84f/UmfHndY52cKfMh17.png" alt="Round MVP feed module" loading="lazy"></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ REFLECTIONS ============ -->
+  <section id="reflections">
+    <div class="wrap">
+      <span class="kicker reveal">07 — Reflections</span>
+      <h2 class="reveal">Outcomes &amp; what I'd carry forward</h2>
+
+      <span class="tag reveal">Outcomes</span>
+      <ul class="clean reveal">
+        <li>Designs presented up the Riot organisation were met with <strong>very positive feedback</strong>.</li>
+        <li>Owned all <strong>Valorant wireframing</strong> and the <strong>stats module for both LoL and Valorant</strong>.</li>
+        <li>Acted as the team's <strong>key Valorant stakeholder</strong> — the resident expert on game mechanics — and supported developers through delivery.</li>
+        <li>Research synthesised into a presentation that <strong>shaped the feature's scope</strong> with the REN team.</li>
+      </ul>
+
+      <h3 class="reveal">What was hard</h3>
+      <p class="reveal">The ambiguous brief demanded that we shape scope collaboratively instead of executing a spec — uncomfortable, but ultimately where the most valuable strategic work happened. Recruitment was equally tough: some testers no-showed, others misrepresented their experience, and we chose a smaller honest sample over a bigger compromised one.</p>
+
+      <h3 class="reveal">What I learned</h3>
+      <div class="callout reveal">
+        <p>Defining clear research objectives is everything. Go beyond the surface of what you're testing and understand the <strong>whole picture</strong> — including the client's business goals and who <em>they</em> report to. That's what makes research land twice: with the client, and with the people the client answers to.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <p style="margin:0">Esports Stats Panel — a case study by <a href="https://www.joemlee.com">Joseph Lee</a></p>
+    </div>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   SMOOTH EASED SCROLLING — custom requestAnimationFrame tween
+   with ease-in-out so nav clicks glide instead of snapping.
+   ============================================================ */
+(function(){
+  const DURATION = 900; // ms — tweak scroll speed here
+  let rafId = null;
+
+  function easeInOutCubic(t){
+    return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2;
+  }
+
+  function animateScrollTo(targetY){
+    if (rafId) cancelAnimationFrame(rafId);
+    const startY = window.scrollY;
+    const maxY = document.documentElement.scrollHeight - window.innerHeight;
+    const destY = Math.max(0, Math.min(targetY, maxY));
+    const delta = destY - startY;
+    if (Math.abs(delta) < 1) return;
+    const start = performance.now();
+
+    function step(now){
+      const t = Math.min((now - start) / DURATION, 1);
+      window.scrollTo(0, startY + delta * easeInOutCubic(t));
+      if (t < 1) rafId = requestAnimationFrame(step);
+      else rafId = null;
+    }
+    rafId = requestAnimationFrame(step);
+  }
+
+  // Cancel the tween if the user takes over (wheel / touch / keys)
+  ['wheel','touchstart','keydown'].forEach(evt =>
+    window.addEventListener(evt, () => { if (rafId){ cancelAnimationFrame(rafId); rafId = null; } }, {passive:true})
+  );
+
+  const navLinks = Array.from(document.querySelectorAll('.sidenav a'));
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      if (link.hasAttribute('data-top')) { animateScrollTo(0); return; }
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target){
+        const y = target.getBoundingClientRect().top + window.scrollY - 24;
+        animateScrollTo(y);
+      }
+    });
+  });
+
+  /* ---------- Scrollspy: highlight the section in view ---------- */
+  const sections = Array.from(document.querySelectorAll('section[id]'));
+  function updateActive(){
+    const probe = window.scrollY + window.innerHeight * 0.35;
+    let current = sections[0];
+    for (const s of sections){
+      if (s.offsetTop <= probe) current = s;
+    }
+    navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current.id));
+  }
+  window.addEventListener('scroll', updateActive, {passive:true});
+  updateActive();
+
+  /* ---------- Scroll-reveal animations ---------- */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting){
+        en.target.classList.add('visible');
+        io.unobserve(en.target);
+      }
+    });
+  }, {threshold: 0.12, rootMargin: '0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+})();
+</script>
+</body>
+</html>

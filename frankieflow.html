@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frankie Flow — Joseph Lee</title>
+<meta name="description" content="Turning brittle JSON config into a drag-and-drop canvas — how Frankie Flow let FrankieOne's customers deploy their own KYC/KYB rules. A case study by Joseph Lee.">
+<style>
+/* ============================================================
+   WHITE-LABEL THEME (LIGHT) — edit these variables to rebrand
+   the entire case study. Everything below inherits from here.
+   ============================================================ */
+:root{
+  --bg:           #f8f9fc;   /* page background */
+  --surface:      #ffffff;   /* cards & panels */
+  --surface-2:    #f1f3f9;   /* raised surface */
+  --line:         #e4e7f0;   /* hairlines */
+  --text:         #171a23;   /* body text */
+  --text-dim:     #5b6275;   /* secondary text */
+  --accent:       #2563eb;   /* primary brand colour (check blue) */
+  --accent-2:     #f59e0b;   /* secondary accent (condition orange) */
+  --shadow:       0 1px 2px rgba(23,26,35,.05), 0 8px 24px -12px rgba(23,26,35,.12);
+  --nav-w:        232px;     /* sidebar width */
+  --max-w:        820px;     /* article column width */
+  --radius:       14px;
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto} /* JS handles smooth scrolling with easing */
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  font-size:17px;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- Side navigation ---------- */
+.sidenav{
+  position:fixed;
+  top:50%;
+  left:24px;
+  transform:translateY(-50%);
+  width:var(--nav-w);
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(12px);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:14px 10px;
+  z-index:100;
+  max-height:88vh;
+  overflow-y:auto;
+}
+.sidenav a{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:9px 12px;
+  border-radius:9px;
+  color:var(--text-dim);
+  text-decoration:none;
+  font-size:13.5px;
+  font-weight:500;
+  letter-spacing:.01em;
+  transition:color .3s ease, background .3s ease;
+  position:relative;
+}
+.sidenav a svg{width:17px;height:17px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s ease}
+.sidenav a:hover{color:var(--text);background:rgba(23,26,35,.04)}
+.sidenav a.active{color:var(--text);background:rgba(37,99,235,.08)}
+.sidenav a.active svg{stroke:var(--accent)}
+.sidenav a.active::before{
+  content:"";
+  position:absolute;left:0;top:50%;
+  transform:translateY(-50%);
+  width:3px;height:55%;
+  border-radius:3px;
+  background:var(--accent);
+}
+.sidenav .divider{height:1px;background:var(--line);margin:8px 12px}
+
+/* ---------- Layout ---------- */
+.page{
+  margin-left:calc(var(--nav-w) + 64px);
+  margin-right:32px;
+}
+.wrap{max-width:var(--max-w);margin:0 auto;padding:0 20px}
+section{padding:96px 0 32px;scroll-margin-top:0}
+
+/* ---------- Typography ---------- */
+.kicker{
+  display:inline-block;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:14px;
+}
+h1{font-size:clamp(36px,5vw,56px);line-height:1.12;font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(26px,3.4vw,36px);line-height:1.2;font-weight:750;letter-spacing:-.015em;margin-bottom:20px}
+h3{font-size:20px;font-weight:700;margin:36px 0 12px}
+p{color:var(--text-dim);margin-bottom:18px;max-width:68ch}
+p strong, li strong{color:var(--text)}
+.lede{font-size:20px;line-height:1.65;color:var(--text)}
+ul.clean{list-style:none;margin-bottom:18px}
+ul.clean li{
+  position:relative;
+  padding-left:26px;
+  margin-bottom:10px;
+  color:var(--text-dim);
+}
+ul.clean li::before{
+  content:"";
+  position:absolute;left:4px;top:11px;
+  width:7px;height:7px;border-radius:2px;
+  background:var(--accent);
+  transform:rotate(45deg);
+}
+
+/* ---------- Hero ---------- */
+.hero{padding:110px 0 24px}
+.hero p.sub{font-size:21px;color:var(--text-dim);margin-top:20px;max-width:60ch}
+.meta-row{
+  display:flex;flex-wrap:wrap;gap:28px;
+  margin-top:34px;padding-top:26px;
+  border-top:1px solid var(--line);
+}
+.meta-row div span{display:block;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px}
+.meta-row div b{font-size:15px;font-weight:600;color:var(--text)}
+
+/* ---------- Imagery ---------- */
+figure{margin:34px 0}
+figure img{
+  width:100%;height:auto;display:block;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  background:var(--surface);
+  box-shadow:var(--shadow);
+}
+figcaption{font-size:13.5px;color:var(--text-dim);margin-top:10px;text-align:center}
+figure.compact img{width:auto;max-width:100%;max-height:520px;margin:0 auto}
+.img-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:34px 0}
+.img-grid figure{margin:0}
+.img-grid .span-2{grid-column:span 2}
+
+/* ---------- Callouts, stats & cards ---------- */
+.callout{
+  background:linear-gradient(135deg, rgba(37,99,235,.06), rgba(245,158,11,.05));
+  border:1px solid var(--line);
+  border-left:3px solid var(--accent);
+  border-radius:var(--radius);
+  padding:26px 30px;
+  margin:34px 0;
+}
+.callout p{margin:0;color:var(--text);font-size:18.5px;line-height:1.6}
+
+.stat-band{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:18px;
+  margin:38px 0;
+}
+.stat-band .stat{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:26px 22px;text-align:center;
+}
+.stat-band .num{
+  font-size:44px;font-weight:800;letter-spacing:-.02em;
+  background:linear-gradient(120deg,var(--accent),var(--accent-2));
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  line-height:1.1;
+}
+.stat-band .lbl{font-size:13px;color:var(--text-dim);margin-top:6px;letter-spacing:.04em;text-transform:uppercase;font-weight:600}
+
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:34px 0}
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:24px 26px;
+}
+.card .n{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:30px;border-radius:8px;
+  background:rgba(37,99,235,.10);color:var(--accent);
+  font-weight:800;font-size:14px;margin-bottom:12px;
+}
+.card p{margin:0;font-size:15.5px}
+.card b{display:block;color:var(--text);font-size:16px;margin-bottom:6px}
+
+.insight-list{counter-reset:ins;list-style:none;margin:30px 0}
+.insight-list li{
+  counter-increment:ins;
+  position:relative;
+  padding:18px 22px 18px 64px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  margin-bottom:12px;
+  color:var(--text);
+  font-size:16.5px;
+}
+.insight-list li::before{
+  content:"0" counter(ins);
+  position:absolute;left:20px;top:50%;transform:translateY(-50%);
+  font-weight:800;font-size:15px;color:var(--accent);
+  letter-spacing:.04em;
+}
+
+.quote{
+  margin:44px 0;padding:8px 0 8px 28px;
+  border-left:3px solid var(--accent-2);
+}
+.quote p{font-size:23px;line-height:1.5;color:var(--text);font-weight:600;margin:0;letter-spacing:-.01em}
+.quote span{display:block;margin-top:10px;font-size:14px;color:var(--text-dim)}
+
+.tag{
+  display:inline-block;font-size:12px;font-weight:700;
+  padding:4px 12px;border-radius:99px;
+  background:rgba(245,158,11,.14);color:#b45309;
+  letter-spacing:.06em;text-transform:uppercase;
+  margin-bottom:14px;
+}
+
+/* ---------- Object legend (the visual language) ---------- */
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:34px 0}
+.legend .obj{
+  display:flex;align-items:center;gap:18px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:20px 22px;
+}
+.legend .shape{flex:none;width:54px;height:54px;display:grid;place-items:center}
+.legend .shape i{display:block}
+.legend .s-check i{width:44px;height:30px;border-radius:6px;background:#2563eb}
+.legend .s-cond i{width:32px;height:32px;background:#f59e0b;border-radius:6px;transform:rotate(45deg)}
+.legend .s-action i{width:46px;height:24px;border-radius:99px;background:linear-gradient(90deg,#ef4444 0 33%,#f59e0b 33% 66%,#22c55e 66%)}
+.legend .s-conn i{width:34px;height:34px;background:#fff;border:2px solid #94a3b8;border-radius:6px;transform:rotate(45deg) skew(10deg,10deg)}
+.legend .s-tmpl i{width:44px;height:30px;border-radius:6px;background:repeating-linear-gradient(45deg,#e4e7f0 0 6px,#f1f3f9 6px 12px);border:2px dashed #94a3b8}
+.legend .obj p{margin:0;font-size:15px}
+.legend .obj b{display:block;color:var(--text);font-size:16px;margin-bottom:4px}
+
+/* ---------- Footer ---------- */
+footer{
+  border-top:1px solid var(--line);
+  margin-top:80px;padding:48px 0 72px;
+  text-align:center;color:var(--text-dim);font-size:14px;
+}
+footer a{color:var(--accent);text-decoration:none}
+
+/* ---------- Scroll reveal ---------- */
+.reveal{
+  opacity:0;
+  transform:translateY(28px);
+  transition:opacity .8s cubic-bezier(.22,.61,.36,1), transform .8s cubic-bezier(.22,.61,.36,1);
+}
+.reveal.visible{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1080px){
+  .sidenav{
+    top:auto;bottom:16px;left:50%;
+    transform:translateX(-50%);
+    width:auto;max-width:calc(100vw - 24px);
+    display:flex;gap:2px;
+    padding:8px;
+    overflow-x:auto;max-height:none;
+  }
+  .sidenav a{flex:none;padding:8px 10px}
+  .sidenav a span{display:none}
+  .sidenav a.active::before{display:none}
+  .sidenav .divider{display:none}
+  .page{margin-left:0;margin-right:0}
+  .stat-band{grid-template-columns:repeat(2,1fr);gap:10px}
+  .card-grid,.img-grid,.legend{grid-template-columns:1fr}
+  .img-grid .span-2{grid-column:span 1}
+  body{padding-bottom:80px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ SIDE NAVIGATION (white-label: edit labels/icons) ============ -->
+<nav class="sidenav" id="sidenav" aria-label="Case study sections">
+  <a href="#overview" class="active">
+    <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10"/></svg>
+    <span>Overview</span>
+  </a>
+  <a href="#problem">
+    <svg viewBox="0 0 24 24"><path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
+    <span>The Problem</span>
+  </a>
+  <a href="#blocks">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
+    <span>Building Blocks</span>
+  </a>
+  <a href="#stresstest">
+    <svg viewBox="0 0 24 24"><path d="M14.7 6.3a5 5 0 00-7.1 7.1l-4.1 4.1a1.5 1.5 0 002.1 2.1l4.1-4.1a5 5 0 007.1-7.1zM16 8l5-5M19 11l2.5-2.5"/></svg>
+    <span>Stress Test</span>
+  </a>
+  <a href="#wireframes">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+    <span>Wireframes</span>
+  </a>
+  <a href="#final">
+    <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 22h8M12 18v4"/></svg>
+    <span>Final UI</span>
+  </a>
+  <a href="#reflections">
+    <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-9 8.35 8.5 8.5 0 01-3.4-.7L3 21l1.85-5.6A8.38 8.38 0 1121 11.5z"/></svg>
+    <span>Reflections</span>
+  </a>
+  <a href="#next">
+    <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    <span>What's Next</span>
+  </a>
+  <div class="divider"></div>
+  <a href="#top" data-top>
+    <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+    <span>Back to top</span>
+  </a>
+</nav>
+
+<div class="page" id="top">
+
+  <!-- ============ HERO / OVERVIEW ============ -->
+  <section class="hero" id="overview">
+    <div class="wrap">
+      <span class="kicker reveal">Case Study · FrankieOne · RegTech</span>
+      <h1 class="reveal">Frankie Flow: turning config code into a canvas</h1>
+      <p class="sub reveal">FrankieOne verifies people and businesses for banks, crypto and investment platforms — where accuracy is everything. But every customer rule change lived in raw JSON, edited by hand. I led the design of Frankie Flow: a workflow tool that turns that code into something customers can see, drag, and deploy themselves.</p>
+      <div class="meta-row reveal">
+        <div><span>Role</span><b>Lead Designer · acting Product Owner</b></div>
+        <div><span>Company</span><b>FrankieOne</b></div>
+        <div><span>Domain</span><b>KYC / KYB Verification</b></div>
+        <div><span>Duration</span><b>10 weeks</b></div>
+      </div>
+      <figure class="reveal">
+        <img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/62fcc162ec1c9d0003932b52/Sm4rduk6rVVSRnsJ.png" alt="Frankie Flow — configuration visualised on a workflow canvas" loading="eager">
+        <figcaption>Configuration, visualised — the polished Frankie Flow canvas.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ THE PROBLEM ============ -->
+  <section id="problem">
+    <div class="wrap">
+      <span class="kicker reveal">01 — The Problem</span>
+      <h2 class="reveal">Every settings change was a Jira ticket</h2>
+      <p class="reveal lede">When a FrankieOne customer wanted to change their verification settings, the path looked like this: raise a Jira ticket → wait for the Tech-Ops team → an engineer hand-edits a JSON file → deploy.</p>
+      <p class="reveal">Tedious for the customer, tedious for Tech-Ops — and, because a human was hand-editing the rules that decide who passes a bank's identity checks, <strong>prone to human error</strong>. Every mistake meant another cycle, further stretching the time it took for changes to go live.</p>
+      <p class="reveal">Meanwhile, our international competitors already offered visual configuration their customers could adjust on the fly. The brief was feature parity — but the opportunity was bigger:</p>
+      <div class="callout reveal">
+        <p><strong>Self-service as the scalable solution:</strong> visualise the JSON so customers change and deploy their own config — no internal help needed. Tech-Ops gets its time back, customers get control within minutes instead of tickets.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BUILDING BLOCKS ============ -->
+  <section id="blocks">
+    <div class="wrap">
+      <span class="kicker reveal">02 — Building Blocks</span>
+      <h2 class="reveal">Decoding the JSON into five objects</h2>
+      <p class="reveal lede">The real challenge wasn't drawing a canvas — it was understanding what the JSON actually <em>did</em>. Configuration holds a client's product settings: which products are on, customisable risk scores, and the conditions deciding how individuals and businesses are assessed through KYC and KYB checks.</p>
+      <p class="reveal">Through extensive calls with the Tech-Ops team, we distilled every behaviour in the config file into five building blocks — each with its own shape and colour, so a glance tells you what it does:</p>
+
+      <div class="legend">
+        <div class="obj reveal">
+          <div class="shape s-check"><i></i></div>
+          <p><b>Checks — blue rectangles</b>FrankieOne's core product offerings: biometric checks, KYC checks, fraud screening.</p>
+        </div>
+        <div class="obj reveal">
+          <div class="shape s-cond"><i></i></div>
+          <p><b>Conditions — orange diamonds</b>Split the workflow into lanes — the branching criteria a verification must meet.</p>
+        </div>
+        <div class="obj reveal">
+          <div class="shape s-action"><i></i></div>
+          <p><b>Actions — coloured pills</b>Terminators that end the workflow: red (fail), yellow (manual attention), green (pass).</p>
+        </div>
+        <div class="obj reveal">
+          <div class="shape s-conn"><i></i></div>
+          <p><b>Connectors — white rhombuses</b>The external data sources FrankieOne calls on to perform the checks.</p>
+        </div>
+        <div class="obj reveal">
+          <div class="shape s-tmpl"><i></i></div>
+          <p><b>Templates</b>Pre-built, industry-compliant series of checks — saved config curated by FrankieOne.</p>
+        </div>
+      </div>
+
+      <figure class="reveal compact">
+        <img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/62fcc162ec1c9d0003932b52/NUSU4tuDKi7QJVuu.png" alt="JSON config visualised as workflow widgets" loading="lazy">
+        <figcaption>From a list of objects in JSON to workflow widgets.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ STRESS TEST ============ -->
+  <section id="stresstest">
+    <div class="wrap">
+      <span class="kicker reveal">03 — Stress Test</span>
+      <h2 class="reveal">Proving the blocks against a real customer</h2>
+      <p class="reveal lede">A visual language is only as good as the messiest thing it has to describe. So before designing a single screen, we rebuilt the live config of one of our most complex customers using only the five blocks.</p>
+      <p class="reveal">Shapes and flows were assigned to represent what the config was actually doing — and the blocks held up. If the system could express our hardest real-world case, it could express anything our customers would throw at it.</p>
+      <figure class="reveal">
+        <img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/62fcc162ec1c9d0003932b52/IgjXyBeih5iWgsOO.png" alt="Rough test visualising real config through Actions, Conditions, Checks and Connectors" loading="lazy">
+        <figcaption>A rough test — visualising real config through Actions, Conditions, Checks and Connectors.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ WIREFRAMES ============ -->
+  <section id="wireframes">
+    <div class="wrap">
+      <span class="kicker reveal">04 — Wireframes</span>
+      <h2 class="reveal">Two components carry the whole tool</h2>
+      <p class="reveal lede">Everything in Frankie Flow happens in two places: the <strong>canvas</strong>, where objects are visualised and arranged — and the <strong>side drawer</strong>, where each object is added and configured.</p>
+      <p class="reveal">The canvas took its inspiration from Miro and FigJam: a free space where customers place objects in whatever order they wish, connecting them into the eventual workflow. The side drawer sits above the canvas, directly tied to the objects — one consistent place to add things and set their rules.</p>
+      <figure class="reveal">
+        <img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/62fcc162ec1c9d0003932b52/gXBInxCbK4g3ATP9.png" alt="Early wireframe of object widgets on a workflow canvas" loading="lazy">
+        <figcaption>A very early wireframe of the object widgets on a workflow canvas.</figcaption>
+      </figure>
+      <h3 class="reveal">Filling in the details</h3>
+      <p class="reveal">Every object deployed on the canvas needed its own settings criteria, so that every configuration variation possible in JSON remained possible visually. That was the bar: <strong>the visual tool could be no less capable than the raw config file</strong>. It took many iterations to get there.</p>
+      <div class="img-grid">
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/62fcc162ec1c9d0003932b52/IVItiUP4944fCfH1.png" alt="Wireframe iteration" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/62fcc162ec1c9d0003932b52/V5pkaBEVB1jGpOFr.png" alt="Wireframe iteration" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/62fcc162ec1c9d0003932b52/pIyfLRirco1qHQAd.png" alt="Wireframe iteration" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/62fcc162ec1c9d0003932b52/IIBH5YrDb44Oibbr.png" alt="Wireframe iteration" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/62fcc162ec1c9d0003932b52/Ze4rIy1czRF5MoxO.png" alt="Wireframe iteration" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/62fcc162ec1c9d0003932b52/BkK7ShLLiOP2aty4.png" alt="Wireframe iteration" loading="lazy"></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINAL UI ============ -->
+  <section id="final">
+    <div class="wrap">
+      <span class="kicker reveal">05 — Final UI</span>
+      <h2 class="reveal">A canvas that speaks FrankieOne</h2>
+      <p class="reveal lede">The UI went through many iterations, leaning on FrankieOne's existing product styling — bold object colouring — so the tool felt native from day one.</p>
+      <ul class="clean reveal">
+        <li><strong>Distinct colours and shapes</strong> make every object category identifiable at a glance — blue rectangles for Checks, orange diamonds for Conditions, traffic-light pills for Actions, white rhombuses for Connectors.</li>
+        <li><strong>White circles with a blue plus</strong> invite the user to open the side drawer and add an object to that branch of the workflow.</li>
+        <li><strong>Branches can be picked up</strong> and reattached to other objects on the canvas — full control over the flow's structure.</li>
+        <li>The canvas lives inside a <strong>workflow builder dashboard</strong> where config files are saved and edited <em>(scoped for MVP 2, along with error messaging for invalid branch connections)</em>.</li>
+      </ul>
+      <h3 class="reveal">The side drawer</h3>
+      <p class="reveal">The drawer is where the workflow gets its brain — adding objects to the canvas and altering the settings inside each one:</p>
+      <div class="img-grid">
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/62fcc162ec1c9d0003932b52/CszbbrDJD2FEHgXy.png" alt="Side drawer screen" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/62fcc162ec1c9d0003932b52/A4GQe7foX4tTwPTe.png" alt="Side drawer screen" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/62fcc162ec1c9d0003932b52/tIPuOtfEGCc5TpGE.png" alt="Side drawer screen" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/62fcc162ec1c9d0003932b52/PQiG0DGODGoWm08b.png" alt="Side drawer screen" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/62fcc162ec1c9d0003932b52/82GTeJ8p7JrQHtjL.png" alt="Side drawer screen" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/62fcc162ec1c9d0003932b52/OXt0rkBBS9TonWSa.png" alt="Side drawer screen" loading="lazy"></figure>
+        <figure class="reveal"><img src="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/62fcc162ec1c9d0003932b52/0CDaOTc59PBKK8e5.png" alt="Side drawer screen" loading="lazy"></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ REFLECTIONS ============ -->
+  <section id="reflections">
+    <div class="wrap">
+      <span class="kicker reveal">06 — Reflections</span>
+      <h2 class="reveal">One designer, one PM, and the whole C-suite watching</h2>
+      <p class="reveal lede">From day one this project ran lean: just myself and a Product Manager. Most of the initial work fell solely on me — weekly deliverables presented directly back to company leadership.</p>
+      <p class="reveal">I wore many hats. At times I was the product owner, explaining the complexities of backend processes and how they'd be represented visually. The biggest hurdle was <strong>managing leadership expectations every single week</strong> — a sink-or-swim situation that forced me to adapt to pressure fast.</p>
+      <div class="quote reveal">
+        <p>"By speaking the language of CEOs, I could manage expectations and show real progress every week."</p>
+        <span>— The skill this project actually taught me</span>
+      </div>
+      <p class="reveal">Time management hit an all-time high — I was across multiple squads as the sole designer, fulfilling each of their needs. Pressure-intensive, but I'm thankful for it: the project tested my capabilities and pushed me beyond anything I'd experienced before.</p>
+      <div class="stat-band reveal">
+        <div class="stat"><div class="num">5</div><div class="lbl">Iterations</div></div>
+        <div class="stat"><div class="num">60</div><div class="lbl">Screens</div></div>
+        <div class="stat"><div class="num">10</div><div class="lbl">Weeks of Work</div></div>
+        <div class="stat"><div class="num">3</div><div class="lbl">Prototypes</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WHAT'S NEXT ============ -->
+  <section id="next">
+    <div class="wrap">
+      <span class="kicker reveal">07 — What's Next</span>
+      <h2 class="reveal">Out of design, into build</h2>
+      <p class="reveal lede">Frankie Flow has left design and entered front-end development.</p>
+      <p class="reveal">Hand-off is complete — detailed design specs delivered, and tickets created alongside our BAs so the build can move without me hovering over it. The canvas is on its way to customers' hands, where the config finally belongs.</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <p style="margin:0">Frankie Flow — a case study by <a href="https://www.joemlee.com">Joseph Lee</a></p>
+    </div>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   SMOOTH EASED SCROLLING — custom requestAnimationFrame tween
+   with ease-in-out so nav clicks glide instead of snapping.
+   ============================================================ */
+(function(){
+  const DURATION = 900; // ms — tweak scroll speed here
+  let rafId = null;
+
+  function easeInOutCubic(t){
+    return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2;
+  }
+
+  function animateScrollTo(targetY){
+    if (rafId) cancelAnimationFrame(rafId);
+    const startY = window.scrollY;
+    const maxY = document.documentElement.scrollHeight - window.innerHeight;
+    const destY = Math.max(0, Math.min(targetY, maxY));
+    const delta = destY - startY;
+    if (Math.abs(delta) < 1) return;
+    const start = performance.now();
+
+    function step(now){
+      const t = Math.min((now - start) / DURATION, 1);
+      window.scrollTo(0, startY + delta * easeInOutCubic(t));
+      if (t < 1) rafId = requestAnimationFrame(step);
+      else rafId = null;
+    }
+    rafId = requestAnimationFrame(step);
+  }
+
+  // Cancel the tween if the user takes over (wheel / touch / keys)
+  ['wheel','touchstart','keydown'].forEach(evt =>
+    window.addEventListener(evt, () => { if (rafId){ cancelAnimationFrame(rafId); rafId = null; } }, {passive:true})
+  );
+
+  const navLinks = Array.from(document.querySelectorAll('.sidenav a'));
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      if (link.hasAttribute('data-top')) { animateScrollTo(0); return; }
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target){
+        const y = target.getBoundingClientRect().top + window.scrollY - 24;
+        animateScrollTo(y);
+      }
+    });
+  });
+
+  /* ---------- Scrollspy: highlight the section in view ---------- */
+  const sections = Array.from(document.querySelectorAll('section[id]'));
+  function updateActive(){
+    const probe = window.scrollY + window.innerHeight * 0.35;
+    let current = sections[0];
+    for (const s of sections){
+      if (s.offsetTop <= probe) current = s;
+    }
+    navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current.id));
+  }
+  window.addEventListener('scroll', updateActive, {passive:true});
+  updateActive();
+
+  /* ---------- Scroll-reveal animations ---------- */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting){
+        en.target.classList.add('visible');
+        io.unobserve(en.target);
+      }
+    });
+  }, {threshold: 0.12, rootMargin: '0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+})();
+</script>
+</body>
+</html>
