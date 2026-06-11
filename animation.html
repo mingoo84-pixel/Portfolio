@@ -169,6 +169,11 @@ footer a{color:var(--accent);text-decoration:none}
 
 <!-- ============ SIDE NAVIGATION ============ -->
 <nav class="sidenav" id="sidenav" aria-label="Case study sections">
+  <a href="index.html" class="home-link">
+    <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    <span>Home</span>
+  </a>
+  <div class="divider"></div>
   <a href="#overview" class="active">
     <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10"/></svg>
     <span>Overview</span>
@@ -279,7 +284,7 @@ footer a{color:var(--accent);text-decoration:none}
     window.addEventListener(evt, () => { if (rafId){ cancelAnimationFrame(rafId); rafId = null; } }, {passive:true})
   );
 
-  const navLinks = Array.from(document.querySelectorAll('.sidenav a'));
+  const navLinks = Array.from(document.querySelectorAll('.sidenav a[href^="#"]'));
   navLinks.forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
