@@ -147,6 +147,9 @@ a { color: inherit; text-decoration: none; }
   transform: translateY(-8px);
   box-shadow: 0 30px 70px rgba(17, 17, 17, 0.16);
 }
+/* stretched link — makes the entire card clickable */
+.case-link { position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+.case .widget { z-index: 2; } /* keeps the CTA button on top of the overlay */
 @media (max-width: 860px) { .case { min-height: 560px; } }
 
 .case-kicker { display: block; font-size: 12px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; }
@@ -345,7 +348,7 @@ a { color: inherit; text-decoration: none; }
     <div class="nav-links">
       <a href="#work">Work</a>
       <a href="https://www.linkedin.com/in/lee23joseph" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/Joseph_Lee_Resume__2025__iby.pdf" target="_blank" rel="noopener">Resume</a>
+      <a href="Joseph_Lee_Resume_2026.pdf" target="_blank" rel="noopener">Resume</a>
       <a href="#contact" class="nav-cta">Get in contact</a>
     </div>
   </div>
@@ -388,6 +391,7 @@ a { color: inherit; text-decoration: none; }
 
       <!-- 1 · Esports Stats Panel -->
       <article class="case reveal bg-stats">
+        <a class="case-link" href="stats.html" aria-label="Read the Esports Stats Panel case study"></a>
         <div class="case-center">
           <span class="case-kicker">Riot Games — Esports</span>
           <h3>Esports Stats Panel</h3>
@@ -417,6 +421,7 @@ a { color: inherit; text-decoration: none; }
 
       <!-- 2 · Multiview -->
       <article class="case reveal bg-multi case-dark">
+        <a class="case-link" href="multiview.html" aria-label="Read the Multiview case study"></a>
         <div class="case-split">
           <div>
             <span class="case-kicker">Riot Games — Broadcast</span>
@@ -446,6 +451,7 @@ a { color: inherit; text-decoration: none; }
 
       <!-- 3 · Frankie Flow -->
       <article class="case reveal bg-flow">
+        <a class="case-link" href="frankieflow.html" aria-label="Read the Frankie Flow case study"></a>
         <div class="case-split">
           <div class="flow-canvas" aria-hidden="true">
             <div class="node n-check" style="left:4%; top:6%;">KYC Check</div>
@@ -484,6 +490,7 @@ a { color: inherit; text-decoration: none; }
 
       <!-- 4 · Sports White Label UI -->
       <article class="case reveal bg-modules case-dark">
+        <a class="case-link" href="SportsUI.html" aria-label="Read the Sports White Label UI case study"></a>
         <div class="case-split wide-visual">
           <div>
             <span class="case-kicker">Sports streaming — Design systems</span>
@@ -507,6 +514,7 @@ a { color: inherit; text-decoration: none; }
 
       <!-- 5 · Animation & Illustration -->
       <article class="case reveal bg-anim case-dark">
+        <a class="case-link" href="animation.html" aria-label="Read the Animation and Illustration case study"></a>
         <div class="case-center middle">
           <span class="case-kicker">Film &amp; TV — Craft</span>
           <h3>Animation &amp; Illustration</h3>
@@ -556,9 +564,9 @@ a { color: inherit; text-decoration: none; }
     <h2 class="reveal">Want to get in contact?<br />Drop me a line.</h2>
     <p class="reveal footer-sub">Open to conversations about product design, esports, fintech — or how a Disney animator ends up designing financial advice tools.</p>
     <div class="reveal footer-actions">
-      <a href="mailto:joe@otivo.com" class="btn btn-primary">Email me</a>
+      <a href="mailto:lee23joseph@hotmail.com" class="btn btn-primary">Email me</a>
       <a href="https://www.linkedin.com/in/lee23joseph" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn ↗</a>
-      <a href="https://uxfolio-prod.s3.us-east-1.amazonaws.com/5ef93bd34bc4080004e8d9b5/Joseph_Lee_Resume__2025__iby.pdf" target="_blank" rel="noopener" class="btn btn-ghost">Resume ↓</a>
+      <a href="Joseph_Lee_Resume_2026.pdf" target="_blank" rel="noopener" class="btn btn-ghost">Resume ↓</a>
     </div>
     <div class="footer-meta">
       <span>© 2026 Joe Lee — Sydney, Australia</span>
