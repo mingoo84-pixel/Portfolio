@@ -11,7 +11,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Joe Lee — Senior Product Designer, Sydney" />
 <meta property="og:description" content="16 years in design and animation across Riot Games, FrankieOne, Disney and Pixar." />
-<meta property="og:image" content="assets/headshot.png" />
+<meta property="og:image" content="assets/headshot.jpg" />
 <meta name="twitter:card" content="summary" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -114,10 +114,8 @@ a { color: inherit; text-decoration: none; }
 .hero-actions { margin-top: 36px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 .headshot {
   width: min(440px, 82vw); margin-top: 80px;
-  /* lifts the photo's grey backdrop (incl. vignetted corners) past pure
-     white so the multiply blend makes the photo edges invisible */
-  mix-blend-mode: multiply;
-  filter: grayscale(1) brightness(1.13) contrast(1.07);
+  /* greyscale + white backdrop are baked into the JPEG itself, so it
+     renders identically on every device — no runtime filters needed */
 }
 
 /* ---------- logo strip ---------- */
@@ -372,7 +370,7 @@ a { color: inherit; text-decoration: none; }
       </a>
       <a href="https://www.linkedin.com/in/lee23joseph" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn ↗</a>
     </div>
-    <img class="reveal headshot" src="assets/headshot.png" alt="Joe Lee — black and white portrait" fetchpriority="high" decoding="async" />
+    <img class="reveal headshot" src="assets/headshot.jpg" alt="Joe Lee — black and white portrait" fetchpriority="high" decoding="async" />
   </div>
 </header>
 
@@ -505,7 +503,7 @@ a { color: inherit; text-decoration: none; }
             <h3>Sports White Label UI</h3>
             <p>One system, every brand. White-label modules for mobile sports streaming, built to rebrand seamlessly across an indefinite number of sports brands — every edge case of score, state, player and type covered.</p>
           </div>
-          <img class="phones" src="assets/case-studies/whitelabel-1.png" alt="Sports white label UI — two phone mockups with different team branding" loading="lazy" decoding="async" />
+          <img class="phones" src="assets/case-studies/whitelabel-1.jpg" alt="Sports white label UI — two phone mockups with different team branding" loading="lazy" decoding="async" />
         </div>
         <div class="widget">
           <div class="widget-logo"><span class="wordmark">Streaming</span></div>
