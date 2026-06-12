@@ -267,7 +267,8 @@ a { color: inherit; text-decoration: none; }
 .bg-flow { background: linear-gradient(135deg, #eef2f8 0%, #e2eaf5 60%, #eef2f8 100%); }
 .bg-flow .case-kicker { color: #2f57c4; }
 /* fixed 420x300 design space, scaled down as one unit on small screens */
-.flow-scale { width: min(420px, 100%); justify-self: center; }
+.case-split > * { min-width: 0; } /* let grid columns shrink below content width on mobile */
+.flow-scale { width: min(420px, 100%); justify-self: center; overflow: hidden; }
 @media (max-width: 767px) { .flow-scale { order: 2; } }
 .flow-canvas { width: 420px; height: 300px; position: relative; transform-origin: top left; }
 .node {
@@ -597,6 +598,7 @@ window.addEventListener('DOMContentLoaded', function () {
   }
   fitFlow();
   window.addEventListener('resize', fitFlow);
+  window.addEventListener('load', fitFlow); // re-measure once fonts/images settle
 
   var els = document.querySelectorAll('.reveal');
   if (window.gsap && window.ScrollTrigger) {
