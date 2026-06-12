@@ -191,8 +191,12 @@ a { color: inherit; text-decoration: none; }
   padding: 16px 18px 16px 24px;
   box-shadow: 0 18px 45px rgba(17, 17, 17, 0.14);
   transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 0.45s;
+  /* keep the widget on a persistent GPU layer so the backdrop blur
+     doesn't flash when the card's hover/reveal animations kick in */
+  will-change: transform;
+  transform: translateX(-50%) translateZ(0);
 }
-.case:hover .widget { transform: translateX(-50%) translateY(-4px); box-shadow: 0 26px 60px rgba(17, 17, 17, 0.2); }
+.case:hover .widget { transform: translateX(-50%) translateY(-4px) translateZ(0); box-shadow: 0 26px 60px rgba(17, 17, 17, 0.2); }
 .widget-logo { display: flex; align-items: center; gap: 10px; min-width: 92px; }
 .widget-logo img { height: 22px; width: auto; max-width: 110px; object-fit: contain; }
 .widget-logo.duo { gap: 14px; }
