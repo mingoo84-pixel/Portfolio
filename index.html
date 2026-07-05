@@ -76,29 +76,45 @@ a { color: inherit; text-decoration: none; }
 .reveal { opacity: 0; transform: translateY(30px); }
 .reveal.shown { opacity: 1; transform: none; }
 
-/* ---------- nav ---------- */
-.nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--line);
-}
+/* ---------- nav (floating pill) ---------- */
+.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 50; pointer-events: none; }
 .nav-inner {
-  max-width: var(--container); margin: 0 auto; padding: 16px 24px;
+  max-width: var(--container); margin: 0 auto; padding: 18px 24px;
   display: flex; align-items: center; justify-content: space-between;
+  position: relative;
 }
+.nav-inner > * { pointer-events: auto; }
 .brand { font-family: var(--display); font-weight: 900; font-size: 17px; color: var(--ink); letter-spacing: -0.02em; }
 .brand span { color: var(--haze); }
-.nav-links { display: flex; align-items: center; gap: 28px; font-size: 14px; color: var(--haze); }
-.nav-links a { transition: color 0.2s; }
-.nav-links a:hover { color: var(--ink); }
-.nav-cta {
-  background: var(--accent); color: #ffffff !important; font-weight: 500;
-  padding: 8px 20px; border-radius: 100px; transition: background 0.25s;
+
+/* centre pill — dark, translucent, floats over content */
+.nav-pill {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  display: flex; align-items: center; gap: 4px;
+  background: rgba(22, 22, 22, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 100px; padding: 6px;
+  box-shadow: 0 12px 30px rgba(17, 17, 17, 0.22);
 }
-.nav-cta:hover { background: var(--accent-dark); }
-@media (max-width: 639px) { .nav-links a:not(.nav-cta) { display: none; } }
+.nav-pill a {
+  display: block; font-size: 14px; font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 9px 18px; border-radius: 100px;
+  transition: background 0.2s, color 0.2s;
+}
+.nav-pill a:hover { background: rgba(255, 255, 255, 0.16); color: #ffffff; }
+.nav-pill a.active { background: #ffffff; color: var(--ink); font-weight: 600; }
+.nav-pill a.active:hover { background: #ffffff; }
+
+/* right CTA — solid pill, mirrors the reference's Sign Up button */
+.nav-cta {
+  background: var(--ink); color: #ffffff !important; font-weight: 600; font-size: 14px;
+  padding: 11px 24px; border-radius: 100px; transition: background 0.25s;
+  box-shadow: 0 12px 30px rgba(17, 17, 17, 0.18);
+}
+.nav-cta:hover { background: #2c2c2c; }
+@media (max-width: 767px) { .nav-pill { display: none; } }
 
 /* ---------- hero ---------- */
 .hero { padding: 144px 0 0; }
@@ -354,12 +370,13 @@ a { color: inherit; text-decoration: none; }
 <nav class="nav">
   <div class="nav-inner">
     <a href="#top" class="brand">Joe Lee<span>.</span></a>
-    <div class="nav-links">
-      <a href="#work">Work</a>
+    <div class="nav-pill">
+      <a href="#work" data-spy="work">Work</a>
+      <a href="#about" data-spy="about">About</a>
       <a href="https://www.linkedin.com/in/lee23joseph" target="_blank" rel="noopener">LinkedIn</a>
       <a href="Joseph_Lee_Resume_2026.pdf" target="_blank" rel="noopener">Resume</a>
-      <a href="#contact" class="nav-cta">Get in contact</a>
     </div>
+    <a href="#contact" class="nav-cta">Get in contact</a>
   </div>
 </nav>
 
@@ -552,7 +569,7 @@ a { color: inherit; text-decoration: none; }
 </section>
 
 <!-- ======= ABOUT ======= -->
-<section class="section">
+<section id="about" class="section">
   <div class="wrap">
     <p class="reveal kicker">About</p>
     <h2 class="reveal">From film frames to fintech flows</h2>
@@ -603,6 +620,25 @@ window.addEventListener('DOMContentLoaded', function () {
   fitFlow();
   window.addEventListener('resize', fitFlow);
   window.addEventListener('load', fitFlow); // re-measure once fonts/images settle
+
+  // nav scroll-spy — white pill follows the section in view
+  var spyLinks = document.querySelectorAll('.nav-pill a[data-spy]');
+  var spySections = [];
+  spyLinks.forEach(function (link) {
+    var sec = document.getElementById(link.dataset.spy);
+    if (sec) spySections.push({ link: link, sec: sec });
+  });
+  function updateSpy() {
+    var current = null;
+    spySections.forEach(function (item) {
+      if (item.sec.getBoundingClientRect().top <= window.innerHeight * 0.4) current = item;
+    });
+    spySections.forEach(function (item) {
+      item.link.classList.toggle('active', item === current);
+    });
+  }
+  updateSpy();
+  window.addEventListener('scroll', updateSpy, { passive: true });
 
   var els = document.querySelectorAll('.reveal');
   if (window.gsap && window.ScrollTrigger) {
