@@ -151,7 +151,7 @@ a { color: inherit; text-decoration: none; }
 .logo-img { height: 30px; width: auto; max-width: 140px; object-fit: contain; filter: grayscale(1) opacity(0.55); transition: filter 0.25s; }
 .logo-img:hover { filter: grayscale(0) opacity(1); }
 .logo-img.tall { height: 42px; }
-.logo-img.logo-otivo { height: 60px; max-width: 260px; }
+.logo-img.logo-otivo { height: 42px; max-width: 190px; }
 .logo-img.logo-pixar { height: 170px; max-width: 340px; }
 
 /* ---------- section headers ---------- */
@@ -273,7 +273,70 @@ a { color: inherit; text-decoration: none; }
 .widget-cta .cta-lock { width: 12px; height: 12px; opacity: 0.75; }
 /* the Otivo SVG carries generous internal padding — render it larger so it
    sits optically level with the other widget logos */
-.widget-logo img.logo-otivo-widget { height: 44px; max-width: 150px; }
+.widget-logo img.logo-otivo-widget { height: 31px; max-width: 120px; }
+
+
+/* ---------- otivo card: frosted password overlay ---------- */
+.case-lock {
+  position: absolute; inset: 0; z-index: 5;
+  display: grid; place-items: center;
+  background: rgba(255, 255, 255, 0.55);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  backdrop-filter: blur(16px) saturate(1.15);
+  border-radius: inherit;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.case-lock.open { opacity: 1; pointer-events: auto; }
+.case-lock-inner {
+  width: min(340px, calc(100% - 48px));
+  text-align: center;
+  transform: translateY(8px);
+  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.case-lock.open .case-lock-inner { transform: none; }
+.case-lock-x {
+  position: absolute; top: 18px; right: 20px;
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  background: rgba(255, 255, 255, 0.8);
+  color: #111; font-size: 16px; line-height: 1;
+  display: grid; place-items: center; cursor: pointer;
+  transition: background 0.25s;
+}
+.case-lock-x:hover { background: #ffffff; }
+.cl-icon {
+  width: 48px; height: 48px; border-radius: 50%; margin: 0 auto 14px;
+  background: rgba(27, 188, 175, 0.15);
+  display: grid; place-items: center;
+}
+.cl-icon svg { width: 20px; height: 20px; stroke: var(--accent); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.cl-title { font-family: var(--display); font-weight: 900; font-size: 20px; color: var(--ink); }
+.cl-sub { font-size: 13px; color: rgba(34, 34, 34, 0.6); margin-top: 6px; margin-bottom: 18px; }
+.case-lock form { display: flex; flex-direction: column; gap: 10px; }
+.case-lock input {
+  width: 100%; text-align: center;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(17, 17, 17, 0.15);
+  border-radius: 12px; padding: 12px 16px;
+  font-family: var(--font); font-size: 15px; color: var(--ink);
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.case-lock input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(27, 188, 175, 0.15); }
+.case-lock button[type=submit] {
+  width: 100%; border: none; cursor: pointer;
+  background: var(--ink); color: #ffffff;
+  font-family: var(--font); font-weight: 600; font-size: 14.5px;
+  padding: 12px 22px; border-radius: 100px;
+  transition: background 0.25s, transform 0.15s;
+}
+.case-lock button[type=submit]:hover { background: #2c2c2c; }
+.case-lock button[type=submit]:active { transform: scale(0.98); }
+.case-lock button[type=submit]:disabled { opacity: 0.65; cursor: wait; }
+.cl-err { margin-top: 10px; font-size: 12.5px; font-weight: 500; color: #d64545; min-height: 17px; }
+@keyframes clshake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-7px); } 75% { transform: translateX(7px); } }
+.cl-shake { animation: clshake 0.3s ease; }
 
 /* ---------- card 1: stats panel ---------- */
 .bg-stats { background: linear-gradient(160deg, #fdeeec 0%, #fbdcd6 100%); }
@@ -364,7 +427,7 @@ a { color: inherit; text-decoration: none; }
 /* ---------- card 5: animation ---------- */
 .bg-anim {
   background:
-    url('assets/case-studies/animation.jpg') center / cover no-repeat,
+    url('assets/case-studies/animation/wWQvTOEgEACCuYlc.jpg') center / cover no-repeat,
     linear-gradient(180deg, #141129 0%, #2b1d4e 55%, #45266b 100%);
 }
 .bg-anim .case-kicker { color: #cdbcf5; }
@@ -496,6 +559,20 @@ a { color: inherit; text-decoration: none; }
             Case study
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </a>
+        </div>
+
+        <div class="case-lock" id="otivoLock" role="dialog" aria-label="Password required for the Otivo Rebrand case study">
+          <button class="case-lock-x" id="otivoLockX" type="button" aria-label="Close password prompt">&#10005;</button>
+          <div class="case-lock-inner">
+            <div class="cl-icon"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div>
+            <div class="cl-title">Password protected</div>
+            <div class="cl-sub">Enter the password to view this case study.<br>It&rsquo;s case-sensitive.</div>
+            <form id="otivoLockForm">
+              <input id="otivoPw" type="password" placeholder="Enter password" autocomplete="off">
+              <button type="submit" id="otivoGo">View case study</button>
+            </form>
+            <div class="cl-err" id="otivoErr"></div>
+          </div>
         </div>
       </article>
 
@@ -752,5 +829,62 @@ window.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+
+<script>
+/* ---------- Otivo card password gate ---------- */
+(function () {
+  var CHECK = {"s": "JLBLFJLHhqpkjXf5NQw1jg==", "i": "ac9DcnV82PRccfJI", "it": 600000, "c": "M+Kwa4RcTTY/Xe3x6f4u5ltJ"};
+  var card = document.querySelector('.bg-otivo');
+  if (!card) return;
+  var lock = document.getElementById('otivoLock');
+  var form = document.getElementById('otivoLockForm');
+  var pw = document.getElementById('otivoPw');
+  var go = document.getElementById('otivoGo');
+  var err = document.getElementById('otivoErr');
+  var b64 = function (s) { return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); }); };
+
+  function openLock(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    lock.classList.add('open');
+    err.textContent = '';
+    setTimeout(function () { pw.focus(); }, 300);
+  }
+  function closeLock() {
+    lock.classList.remove('open');
+    pw.value = '';
+    err.textContent = '';
+    go.disabled = false; go.textContent = 'View case study';
+  }
+
+  card.querySelectorAll('a[href="otivo-rebrand.html"]').forEach(function (a) {
+    a.addEventListener('click', openLock);
+  });
+  document.getElementById('otivoLockX').addEventListener('click', function (e) { e.stopPropagation(); closeLock(); });
+  lock.addEventListener('click', function (e) { if (e.target === lock) closeLock(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && lock.classList.contains('open')) closeLock(); });
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    err.textContent = ''; go.disabled = true; go.textContent = 'Checking\u2026';
+    try {
+      var keyMat = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw.value), 'PBKDF2', false, ['deriveKey']);
+      var key = await crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: b64(CHECK.s), iterations: CHECK.it, hash: 'SHA-256' },
+        keyMat, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+      await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(CHECK.i) }, key, b64(CHECK.c));
+      try { sessionStorage.setItem('or_pw', pw.value); } catch (_) {}
+      go.textContent = 'Unlocking\u2026';
+      window.location.href = 'otivo-rebrand.html';
+    } catch (_) {
+      go.disabled = false; go.textContent = 'View case study';
+      err.textContent = 'Incorrect password \u2014 remember it\u2019s case-sensitive.';
+      pw.classList.add('cl-shake');
+      setTimeout(function () { pw.classList.remove('cl-shake'); }, 350);
+      pw.select();
+    }
+  });
+})();
+</script>
 </body>
 </html>
