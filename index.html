@@ -294,17 +294,20 @@ a { color: inherit; text-decoration: none; }
 }
 .case-lock.open { opacity: 1; pointer-events: auto; }
 .case-lock-inner {
+  position: relative;
   width: min(340px, calc(100% - 48px));
   text-align: center;
   transform: translateY(8px);
   transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 .case-lock.open .case-lock-inner { transform: none; }
+/* close button rides with the content, so it can never scroll out of view
+   on tall cards — sits just above the prompt, right-aligned to it */
 .case-lock-x {
-  position: absolute; top: 18px; right: 20px;
-  width: 38px; height: 38px; border-radius: 50%;
+  position: absolute; top: -56px; right: 0;
+  width: 40px; height: 40px; border-radius: 50%;
   border: 1px solid rgba(17, 17, 17, 0.12);
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.85);
   color: #111; font-size: 16px; line-height: 1;
   display: grid; place-items: center; cursor: pointer;
   transition: background 0.25s;
@@ -567,8 +570,8 @@ a { color: inherit; text-decoration: none; }
         </div>
 
         <div class="case-lock" id="otivoLock" role="dialog" aria-label="Password required for the Otivo Rebrand case study">
-          <button class="case-lock-x" id="otivoLockX" type="button" aria-label="Close password prompt">&#10005;</button>
           <div class="case-lock-inner">
+            <button class="case-lock-x" id="otivoLockX" type="button" aria-label="Close password prompt">&#10005;</button>
             <div class="cl-icon"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div>
             <div class="cl-title">Password protected</div>
             <div class="cl-sub">Enter the password to view this case study.<br>It&rsquo;s case-sensitive.</div>
