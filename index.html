@@ -302,15 +302,21 @@ a { color: inherit; text-decoration: none; }
 }
 .case-lock.open .case-lock-inner { transform: none; }
 /* close button rides with the content, so it can never scroll out of view
-   on tall cards — sits just above the prompt, right-aligned to it */
+   on tall cards — vertically centred with the lock icon (48px circle at the
+   top of the prompt), floated 16px outside the field's right edge */
 .case-lock-x {
-  position: absolute; top: -56px; right: 0;
+  position: absolute; top: 4px; right: -56px;
   width: 40px; height: 40px; border-radius: 50%;
   border: 1px solid rgba(17, 17, 17, 0.12);
   background: rgba(255, 255, 255, 0.85);
   color: #111; font-size: 16px; line-height: 1;
   display: grid; place-items: center; cursor: pointer;
   transition: background 0.25s;
+}
+@media (max-width: 480px) {
+  /* not enough card width to float outside the field — tuck to its edge,
+     still centred with the lock icon row */
+  .case-lock-x { right: 0; }
 }
 .case-lock-x:hover { background: #ffffff; }
 .cl-icon {
