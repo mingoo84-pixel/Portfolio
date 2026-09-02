@@ -274,6 +274,11 @@ a { color: inherit; text-decoration: none; }
 /* the Otivo SVG carries generous internal padding — render it larger so it
    sits optically level with the other widget logos */
 .widget-logo img.logo-otivo-widget { height: 31px; max-width: 120px; }
+@media (max-width: 860px) {
+  /* keep logo + CTA on one row, like the other cards */
+  .widget-logo img.logo-otivo-widget { height: 25px; max-width: 96px; }
+  .bg-otivo .widget-logo { min-width: 0; }
+}
 
 
 /* ---------- otivo card: frosted password overlay ---------- */
@@ -552,7 +557,7 @@ a { color: inherit; text-decoration: none; }
           <div class="widget-metrics">
             <div class="widget-metric"><div class="num">2×</div><div class="lbl">Conversion</div></div>
             <div class="widget-metric"><div class="num">+122%</div><div class="lbl">Engagement</div></div>
-            <div class="widget-metric"><div class="num">3</div><div class="lbl">Brands, 1 platform</div></div>
+            <div class="widget-metric"><div class="num">3</div><div class="lbl">Brands</div></div>
           </div>
           <a class="widget-cta" href="otivo-rebrand.html">
             <svg class="cta-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
