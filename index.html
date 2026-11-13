@@ -281,6 +281,33 @@ a { color: inherit; text-decoration: none; }
 }
 
 
+/* ---------- card 0b: otivo retirement journey ---------- */
+.bg-retire { background: linear-gradient(150deg, #000032 0%, #001a5e 55%, #000032 100%); }
+.bg-retire .case-kicker { color: #7FD1FF; }
+.rj-mock {
+  width: min(440px, 100%); justify-self: center; position: relative;
+  background: #ffffff; border: 1px solid #e2e9f5; border-radius: 14px;
+  box-shadow: 0 26px 55px rgba(0, 10, 60, 0.45);
+  padding: 18px 20px 0; text-align: left; overflow: hidden;
+}
+@media (max-width: 767px) { .rj-mock { order: 2; } }
+.rj-steps { display: flex; align-items: center; gap: 5px; }
+.rj-steps i { display: block; width: 7px; height: 7px; border-radius: 50%; background: #e4ebf7; }
+.rj-steps i.done { background: #17b897; }
+.rj-steps i.now { width: 9px; height: 9px; background: #0064FF; box-shadow: 0 0 0 3px rgba(0,100,255,0.18); }
+.rj-steps span { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #696969; margin-left: 6px; }
+.rj-q { font-family: var(--display); font-weight: 900; font-size: 20px; color: #111111; letter-spacing: -0.01em; margin-top: 10px; }
+.rj-answer { display: inline-flex; align-items: center; gap: 7px; margin-top: 8px; font-size: 12px; font-weight: 800; color: #0a7d43; background: #e7f8ee; border-radius: 99px; padding: 5px 13px; }
+.rj-answer i { width: 7px; height: 7px; border-radius: 50%; background: #17b897; }
+.rj-answer em { font-style: normal; font-weight: 600; color: #4a6557; }
+.rj-chart { display: flex; align-items: flex-end; gap: 3px; height: 56px; margin-top: 14px; }
+.rj-chart i { flex: 1; border-radius: 3px 3px 0 0; background: #001a5e; }
+.rj-chart i.sp { background: #17b897; }
+.rj-chart i.ap { background: #ff9d2e; }
+.rj-bar { margin: 14px -20px 0; background: #000032; padding: 11px 20px; display: flex; gap: 22px; }
+.rj-bar .cell span { display: block; font-size: 8px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+.rj-bar .cell b { font-size: 12px; font-weight: 700; color: #ffffff; white-space: nowrap; }
+
 /* ---------- otivo card: frosted password overlay ---------- */
 .case-lock {
   position: absolute; inset: 0; z-index: 5;
@@ -533,7 +560,7 @@ a { color: inherit; text-decoration: none; }
 
       <!-- 0 · Otivo Rebrand -->
       <article class="case reveal bg-otivo">
-        <a class="case-link" href="otivo-rebrand.html" aria-label="Read the Otivo Rebrand case study (password protected)"></a>
+        <a class="case-link" href="otivo-rebrand.html" aria-label="Read the Otivo Rebrand case study"></a>
         <div class="case-split">
           <div>
             <span class="case-kicker">Otivo — Brand &amp; Product</span>
@@ -569,23 +596,64 @@ a { color: inherit; text-decoration: none; }
             <div class="widget-metric"><div class="num">3</div><div class="lbl">Brands</div></div>
           </div>
           <a class="widget-cta" href="otivo-rebrand.html">
+            Case study
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <!-- 0b · Otivo Retirement Journey -->
+      <article class="case reveal case-dark bg-retire">
+        <a class="case-link" href="retirement-journey.html" aria-label="Read the Otivo Retirement Journey case study (password protected)"></a>
+        <div class="case-split">
+          <div>
+            <span class="case-kicker">Otivo — Product &amp; UX</span>
+            <h3>Retirement Journey</h3>
+            <p>Retirement is the most intricate, personal problem in financial advice. A working calculation engine — every rule on one overwhelming page — became an eight-chapter journey that a complete beginner can follow and a power user can bend to their own assumptions. Designed in a new way, with AI carrying the maths. Now in MVP development.</p>
+          </div>
+          <div class="rj-mock" aria-hidden="true">
+            <div class="rj-steps"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="now"></i><i></i><i></i><i></i><span>Step 5 of 8</span></div>
+            <div class="rj-q">Will I get the Age Pension?</div>
+            <div class="rj-answer"><i></i>Yes <em>— a part pension from age 74</em></div>
+            <div class="rj-chart">
+              <i style="height:92%"></i><i style="height:92%"></i><i style="height:92%"></i><i style="height:92%"></i><i style="height:92%"></i><i style="height:92%"></i>
+              <i class="sp" style="height:78%"></i><i class="sp" style="height:74%"></i><i class="sp" style="height:68%"></i><i class="sp" style="height:62%"></i>
+              <i class="ap" style="height:58%"></i><i class="ap" style="height:56%"></i><i class="ap" style="height:54%"></i><i class="ap" style="height:54%"></i><i class="ap" style="height:54%"></i>
+            </div>
+            <div class="rj-bar">
+              <div class="cell"><span>Target income</span><b>$109,000/yr</b></div>
+              <div class="cell"><span>Strategies</span><b>2 added</b></div>
+              <div class="cell"><span>Plan</span><b>✓ Lasts to 92</b></div>
+            </div>
+          </div>
+        </div>
+        <div class="widget">
+          <div class="widget-logo">
+            <img class="logo-otivo-widget" src="assets/logos/Otivo%20dark.svg" alt="Otivo" loading="lazy" decoding="async" />
+          </div>
+          <div class="widget-metrics">
+            <div class="widget-metric"><div class="num">8</div><div class="lbl">Chapters</div></div>
+            <div class="widget-metric"><div class="num">8</div><div class="lbl">Prototypes</div></div>
+            <div class="widget-metric"><div class="num">MVP</div><div class="lbl">In build</div></div>
+          </div>
+          <a class="widget-cta" href="retirement-journey.html">
             <svg class="cta-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
             Case study
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </a>
         </div>
 
-        <div class="case-lock" id="otivoLock" role="dialog" aria-label="Password required for the Otivo Rebrand case study">
+        <div class="case-lock" id="retireLock" role="dialog" aria-label="Password required for the Otivo Retirement Journey case study">
           <div class="case-lock-inner">
-            <button class="case-lock-x" id="otivoLockX" type="button" aria-label="Close password prompt">&#10005;</button>
+            <button class="case-lock-x" id="retireLockX" type="button" aria-label="Close password prompt">&#10005;</button>
             <div class="cl-icon"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div>
             <div class="cl-title">Password protected</div>
             <div class="cl-sub">Enter the password to view this case study.<br>It&rsquo;s case-sensitive.</div>
-            <form id="otivoLockForm">
-              <input id="otivoPw" type="password" placeholder="Enter password" autocomplete="off">
-              <button type="submit" id="otivoGo">View case study</button>
+            <form id="retireLockForm">
+              <input id="retirePw" type="password" placeholder="Enter password" autocomplete="off">
+              <button type="submit" id="retireGo">View case study</button>
             </form>
-            <div class="cl-err" id="otivoErr"></div>
+            <div class="cl-err" id="retireErr"></div>
           </div>
         </div>
       </article>
@@ -845,16 +913,16 @@ window.addEventListener('DOMContentLoaded', function () {
 
 
 <script>
-/* ---------- Otivo card password gate ---------- */
+/* ---------- Retirement Journey card password gate ---------- */
 (function () {
-  var CHECK = {"s": "JLBLFJLHhqpkjXf5NQw1jg==", "i": "ac9DcnV82PRccfJI", "it": 600000, "c": "M+Kwa4RcTTY/Xe3x6f4u5ltJ"};
-  var card = document.querySelector('.bg-otivo');
+  var CHECK = {"s": "kmLW6BACP8l2y6GGqDJahg==", "i": "ez/yNDTA45ito0pm", "it": 600000, "c": "S0HfpBrvxNWZjVybydQytE55"};
+  var card = document.querySelector('.bg-retire');
   if (!card) return;
-  var lock = document.getElementById('otivoLock');
-  var form = document.getElementById('otivoLockForm');
-  var pw = document.getElementById('otivoPw');
-  var go = document.getElementById('otivoGo');
-  var err = document.getElementById('otivoErr');
+  var lock = document.getElementById('retireLock');
+  var form = document.getElementById('retireLockForm');
+  var pw = document.getElementById('retirePw');
+  var go = document.getElementById('retireGo');
+  var err = document.getElementById('retireErr');
   var b64 = function (s) { return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); }); };
 
   function openLock(e) {
@@ -871,28 +939,28 @@ window.addEventListener('DOMContentLoaded', function () {
     go.disabled = false; go.textContent = 'View case study';
   }
 
-  card.querySelectorAll('a[href="otivo-rebrand.html"]').forEach(function (a) {
+  card.querySelectorAll('a[href="retirement-journey.html"]').forEach(function (a) {
     a.addEventListener('click', openLock);
   });
-  document.getElementById('otivoLockX').addEventListener('click', function (e) { e.stopPropagation(); closeLock(); });
+  document.getElementById('retireLockX').addEventListener('click', function (e) { e.stopPropagation(); closeLock(); });
   lock.addEventListener('click', function (e) { if (e.target === lock) closeLock(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && lock.classList.contains('open')) closeLock(); });
 
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
-    err.textContent = ''; go.disabled = true; go.textContent = 'Checking\u2026';
+    err.textContent = ''; go.disabled = true; go.textContent = 'Checking…';
     try {
       var keyMat = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw.value), 'PBKDF2', false, ['deriveKey']);
       var key = await crypto.subtle.deriveKey(
         { name: 'PBKDF2', salt: b64(CHECK.s), iterations: CHECK.it, hash: 'SHA-256' },
         keyMat, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
       await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(CHECK.i) }, key, b64(CHECK.c));
-      try { sessionStorage.setItem('or_pw', pw.value); } catch (_) {}
-      go.textContent = 'Unlocking\u2026';
-      window.location.href = 'otivo-rebrand.html';
+      try { sessionStorage.setItem('rj_pw', pw.value); } catch (_) {}
+      go.textContent = 'Unlocking…';
+      window.location.href = 'retirement-journey.html';
     } catch (_) {
       go.disabled = false; go.textContent = 'View case study';
-      err.textContent = 'Incorrect password \u2014 remember it\u2019s case-sensitive.';
+      err.textContent = 'Incorrect password — remember it’s case-sensitive.';
       pw.classList.add('cl-shake');
       setTimeout(function () { pw.classList.remove('cl-shake'); }, 350);
       pw.select();
